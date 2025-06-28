@@ -25,7 +25,6 @@ var detectCmd = &cobra.Command{
 		var buf bytes.Buffer
 		writer := multipart.NewWriter(&buf)
 
-		// Walk through the folder and add each file
 		err := filepath.Walk(inputPath, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -48,6 +47,7 @@ var detectCmd = &cobra.Command{
 			}
 			return nil
 		})
+
 		if err != nil {
 			panic(err)
 		}

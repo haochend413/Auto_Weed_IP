@@ -3,6 +3,7 @@ from pathlib import Path
 
 folder_path = Path.home() / "Desktop" / "test_images"  # Correct path expansion
 files = []
+print(folder_path)
 
 for img_path in folder_path.glob("*.*"):
     if img_path.suffix.lower() in [".jpg", ".jpeg", ".png"]:

@@ -12,6 +12,7 @@ detect_router = APIRouter()
 
 @detect_router.post("/detect")
 def detect(background_tasks: BackgroundTasks, images: list[UploadFile] = File(...)):
+    print("request received")
     try:
         # is this right? maybe
         # create a temp dir for auto-deletion

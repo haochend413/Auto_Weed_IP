@@ -47,3 +47,5 @@ ultralytics==8.3.160
 ultralytics-thop==2.0.14
 urllib3==2.5.0
 uvicorn==0.34.3
+python-multipart
+

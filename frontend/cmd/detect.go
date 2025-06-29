@@ -15,11 +15,10 @@ import (
 var inputPath string
 
 var detectCmd = &cobra.Command{
-	Use:   "d",
+	Use:   "detect",
 	Short: "detect",
-	Long:  "Detect weeds",
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	Long:  "Weed Detection",
+
 	Run: func(cmd *cobra.Command, args []string) {
 		//need to pass the input files into server
 		var buf bytes.Buffer

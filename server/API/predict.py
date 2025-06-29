@@ -16,8 +16,8 @@ def detect(background_tasks: BackgroundTasks, images: list[UploadFile] = File(..
     try:
         # is this right? maybe
         # create a temp dir for auto-deletion
-
-        model = YOLO("/Users/haochending/Auto_Weed_IP/server/models/detection/best.pt")
+        model_path = Path(__file__).parent.parent / "models" / "detection" / "best.pt" # Correct path expansion
+        model = YOLO(model_path)
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
 
@@ -30,7 +30,7 @@ def detect(background_tasks: BackgroundTasks, images: list[UploadFile] = File(..
 
             # output result
             # this might work ?
-            output_dir = Path("/Users/haochending/Auto_Weed_IP/runs")
+            output_dir = Path(__file__).parent.parent.parent / "runs"
 
             # buffer to store & send zip file
             zip_buffer = io.BytesIO()

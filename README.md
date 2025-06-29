@@ -21,6 +21,8 @@ python 3.13 (maybe)
 
 ## Frontend Use Guide
 
+[![Guide](https://img.youtube.com/vi/jOXxdtn0LE8/0.jpg)](https://youtu.be/jOXxdtn0LE8)
+
 - detect : use d with -i flag
   `./awd d -i path_to_the_images_folder`
 

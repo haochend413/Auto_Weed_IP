@@ -26,7 +26,7 @@ python 3.13 (maybe), go 1.24.4
 - detect : use detect with -i flag
   `./awd detect -i path_to_the_images_folder`
 
-- detect : use seg with -i flag
+- segmentation : use seg with -i flag
   `./awd seg -i path_to_the_images_folder`
 
   The results will be stored in `~/Awd_Results` folder as a zip file named after time stored. 

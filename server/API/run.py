@@ -9,6 +9,14 @@ import io
 
 model_router = APIRouter()
 
+# load model at server startup
+models = {
+    "detect": YOLO(Path(__file__).parent.parent / "models" / "detection" / "best.pt"),
+    "segment": YOLO(Path(__file__).parent.parent / "models" / "segment" / "best.pt"),
+    "classify": YOLO(Path(__file__).parent.parent / "models" / "classify" / "best.pt"),
+}
+
+
 
 @model_router.post("/{operation}") 
 def detect( background_tasks: BackgroundTasks,
@@ -18,26 +26,34 @@ def detect( background_tasks: BackgroundTasks,
     try:
         # is this right? maybe
         # create a temp dir for auto-deletion
-        # Choose model path based on operation 
+        # Choose model path & config file based on operation 
         if operation == "detect":
-            model_path = Path(__file__).parent.parent / "models" / "detection" / "best.pt"
+            config_path = Path(__file__).parent.parent / "configs" / "detect.yaml"
         elif operation == "segment":
-            model_path = Path(__file__).parent.parent / "models" / "segment" / "best.pt"
-        elif operation == "classify":
-            model_path = Path(__file__).parent.parent / "models" / "classify" / "best.pt"
-        else:
-            return JSONResponse(status_code=400, content={"error": f"Unknown operation: {operation}"})
-        model = YOLO(model_path)
+            config_path = Path(__file__).parent.parent / "configs" / "segment.yaml"
 
+        elif operation == "classify":
+            config_path = Path(__file__).parent.parent / "configs" / "classify.yaml"
+
+        else: 
+            return JSONResponse(status_code=400, content={"error": f"Unknown operation: {operation}"})
+        
+        model = models[operation]
+        
         with tempfile.TemporaryDirectory() as tmpdir:
-            tmpdir_path = Path(tmpdir)
+            tmpdir_path = Path(tmpdir) 
 
             # save images
-            for img in images:
+            for img in images: 
                 img_path = tmpdir_path / img.filename
                 with img_path.open("wb") as buffer:
                     shutil.copyfileobj(img.file, buffer)
-            result = model(source=str(tmpdir_path), save=True)
+
+            # here the model is used; 
+            print(config_path)
+            result = model(source=str(tmpdir_path), save=True, show_conf = False)
+            # if other things require, use yaml instead 
+            # result = model(source=str(tmpdir_path), save=True, cfg=config_path)
 
             # output result
             output_dir = Path(__file__).parent.parent.parent / "runs"

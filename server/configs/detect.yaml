@@ -1,0 +1,54 @@
+
+# Inference settings
+conf: 0.25           # confidence threshold
+iou: 0.7             # IoU threshold for NMS
+agnostic_nms: False  # class-agnostic NMS
+max_det: 300         # maximum detections per image
+device: cpu          # 'cpu' or '0','0,1', etc.
+half: False          # use half precision
+dnn: False           # use OpenCV DNN for ONNX models
+
+# Image settings 
+imgsz: 640           # image size 
+augment: False       # augmented inference
+visualize: False     # visualize features
+retina_masks: False  # high-resolution masks
+
+# Display and save
+save: False          # save images with annotations
+save_txt: False      # save results to *.txt 
+save_conf: False     # save confidences in labels 
+save_crop: False     # save cropped prediction boxes 
+show: False          # display images 
+show_labels: True    # display labels
+show_conf: False      # display confidences
+show_boxes: True     # display boxes
+line_thickness: 1    # bounding box thickness (pixels)
+
+# Project & naming
+project: runs/predict     # project/name for results
+name: exp                 # save directory name
+exist_ok: False           # overwrite existing project/name
+save_frames: False        # save video frames 
+vid_stride: 1             # video frame stride
+
+# Streaming & output
+stream_buffer: False      # buffer streaming data
+view_img: False           # show results during inference
+save_json: False          # save results to JSON
+save_dir: None            # manually specify save directory
+
+# Advanced
+classes: None             # filter by class, e.g. [0, 2, 15]
+plots: False              # save plots during testing
+max_frames: None          # limit the number of frames for videos
+sync_bn: False            # synchronize batch normalization
+profile: False            # profile inference speed
+verbose: True             # verbose logging
+tracker: botsort.yaml     # tracker config for videos
+
+# For CLI flexibility (ignored in Python usually)
+cli: False
+
+# For task-specific control (YOLO will infer from the model)
+mode: predict

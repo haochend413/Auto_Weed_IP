@@ -64,7 +64,14 @@ func SendImageProcessRequest(operation string) {
 		panic(err)
 	}
 	outputDir := filepath.Join(homeDir, "AWD_Results")
-	os.MkdirAll(outputDir, 0755)
+
+	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
+		err = os.MkdirAll(outputDir, 0755)
+		if err != nil {
+			panic(err)
+		}
+	}
+	fmt.Println("a")
 	outputPath := filepath.Join(outputDir, timeStr+".zip")
 	out, err := os.Create(outputPath)
 	if err != nil {

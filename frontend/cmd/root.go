@@ -11,8 +11,6 @@ var rootCmd = &cobra.Command{
 	Use:   "awd",
 	Short: "autoweed",
 	Long:  "Auto Weed IP",
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("YOLO powered weed automatic classification/segmentation/detection tool. \n To start, use help")
 	},
@@ -29,4 +27,6 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(detectCmd)
+	rootCmd.AddCommand(segmentCmd)
+	rootCmd.AddCommand(clsCmd)
 }

@@ -29,4 +29,20 @@ python 3.13 (maybe), go 1.24.4
 - segmentation : use seg with -i flag
   `./awd seg -i path_to_the_images_folder`
 
+- classification : use seg with -i flag
+  `./awd cls -i path_to_the_images_folder`
+
+  | ID | Common Name      | Role  | Species                   | EPPO Taxon Code | Name                                   |
+|----|------------------|-------|---------------------------|-----------------|----------------------------------------|
+| 0  | chinee apple     | weed  | ziziphus mauritiana       | ZIPMA           | weed: ziziphus mauritiana             |
+| 1  | lantana          | weed  | lantana camara            | LANCA           | weed: lantana camara                  |
+| 2  | parkinsonia      | weed  | parkinsonia aculeata      | PAKAC           | weed: parkinsonia aculeata            |
+| 3  | parthenium       | weed  | parthenium hysterophorus  | PTNHY           | weed: parthenium hysterophorus        |
+| 4  | prickly acacia   | weed  | vachellia nilotica        | ACANL           | weed: vachellia nilotica              |
+| 5  | rubber vine      | weed  | cryptostegia grandiflora  | CVRGR           | weed: cryptostegia grandiflora        |
+| 6  | siam weed        | weed  | chromolaena odorata       | EUPOD           | weed: chromolaena odorata             |
+| 7  | snake weed       | weed  | gutierrezia sarothrae     | GUESA           | weed: gutierrezia sarothrae           |
+| 8  | negative         | na    |                           |                 | none                                   |
+
+
   The results will be stored in `~/Awd_Results` folder as a zip file named after time stored. 

@@ -6,7 +6,7 @@ Automatic weed classification & segmentation powered by YOLO.
 
 ## Requirements
 
-python 3.13 (maybe)
+python 3.13 (maybe), go 1.24.4
 
 ## Installation
 
@@ -23,7 +23,10 @@ python 3.13 (maybe)
 
 [![Guide](https://img.youtube.com/vi/jOXxdtn0LE8/0.jpg)](https://youtu.be/jOXxdtn0LE8)
 
-- detect : use d with -i flag
-  `./awd d -i path_to_the_images_folder`
+- detect : use detect with -i flag
+  `./awd detect -i path_to_the_images_folder`
 
-  The results will be stored in `~/Awd_Results` folder. 
+- detect : use seg with -i flag
+  `./awd seg -i path_to_the_images_folder`
+
+  The results will be stored in `~/Awd_Results` folder as a zip file named after time stored. 

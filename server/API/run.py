@@ -3,14 +3,14 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from ultralytics import YOLO
 import tempfile
 from pathlib import Path
-import zipfile
+import zipfile 
 import shutil
 import io
 
 model_router = APIRouter()
 
-# load model at server startup
-models = {
+# load model at server startup 
+models = { 
     "detect": YOLO(Path(__file__).parent.parent / "models" / "detection" / "best.pt"),
     "segment": YOLO(Path(__file__).parent.parent / "models" / "segment" / "best.pt"),
     "classify": YOLO(Path(__file__).parent.parent / "models" / "classify" / "best.pt"),
@@ -39,7 +39,19 @@ def detect( background_tasks: BackgroundTasks,
             return JSONResponse(status_code=400, content={"error": f"Unknown operation: {operation}"})
         
         model = models[operation]
-        
+        if operation == "classify" :
+            model.model.names = {
+                0: "ziziphus mauritiana", 
+                1: "lantana camara",
+                2: "parkinsonia aculeata",
+                3: "parthenium hysterophorus",
+                4: "vachellia nilotica", 
+                5: "cryptostegia grandiflora",
+                6: "chromolaena odorata",
+                7: "gutierrezia sarothrae", 
+                8: "none", 
+            }
+
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir) 
 
@@ -88,4 +100,7 @@ def detect( background_tasks: BackgroundTasks,
             )
 
     except Exception as e:
+        import traceback
+        print("Exception occurred:", e)
+        traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})

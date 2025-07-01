@@ -71,7 +71,6 @@ func SendImageProcessRequest(operation string) {
 			panic(err)
 		}
 	}
-	fmt.Println("a")
 	outputPath := filepath.Join(outputDir, timeStr+".zip")
 	out, err := os.Create(outputPath)
 	if err != nil {

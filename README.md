@@ -29,7 +29,7 @@ python 3.13 (maybe), go 1.24.4
 - segmentation : use seg with -i flag
   `./awd seg -i path_to_the_images_folder`
 
-- classification : use seg with -i flag
+- classification : use cls with -i flag
   `./awd cls -i path_to_the_images_folder`
 
   

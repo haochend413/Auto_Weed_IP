@@ -26,7 +26,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(detectCmd)
-	rootCmd.AddCommand(segmentCmd)
-	rootCmd.AddCommand(clsCmd)
+	rootCmd.AddCommand(runCmd)
 }

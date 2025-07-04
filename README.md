@@ -24,13 +24,13 @@ python 3.13 (maybe), go 1.24.4
 [![Guide](https://img.youtube.com/vi/jOXxdtn0LE8/0.jpg)](https://youtu.be/jOXxdtn0LE8)
 
 - detect : use detect with -i flag
-  `./awd detect -i path_to_the_images_folder`
+  `./awd r -d path_to_the_images_folder`
 
 - segmentation : use seg with -i flag
-  `./awd seg -i path_to_the_images_folder`
+  `./awd r -s path_to_the_images_folder`
 
 - classification : use cls with -i flag
-  `./awd cls -i path_to_the_images_folder`
+  `./awd r -c path_to_the_images_folder`
 
   
 | ID   | Common Name    | Role | Species                  | EPPO Taxon Code | Name                           |

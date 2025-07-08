@@ -74,8 +74,8 @@ function limitAttributes(stage: Konva.Stage, newAttrs: { x: number; y: number; s
 
 const Canvas = () => {
   const stageRef = React.useRef<Konva.Stage>(null);
-  const width = useStore(s => s.width);
-  const height = useStore(s => s.height);
+    const width = useStore(s => s.width);
+    const height = useStore(s => s.height);
   const setSize = useStore((s) => s.setSize);
   const scale = useStore((state) => state.scale);
   const isDrawing = useStore((state) => state.isDrawing);
@@ -167,26 +167,61 @@ const Canvas = () => {
         <BaseImage />
         <Regions />
       </Stage>
-      <div className="zoom-container">
-        <button
-          onClick={() => {
-            if (stageRef.current) {
-              zoomStage(stageRef.current, 1.2);
-            }
-          }}
+        <div
+        className="zoom-container"
+        style={{
+            // position: "absolute",
+            // top: 24,
+            // left: 24,
+            // position:"absolute",
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            background: "rgba(255,255,255,0.85)",
+            borderRadius: 8,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            padding: 8,
+            zIndex: 10,
+        }}
         >
-          +
+        <button
+            style={{
+            fontSize: 20,
+            padding: "4px 12px",
+            border: "none",
+            background: "#1976d2",
+            color: "white",
+            borderRadius: 4,
+            cursor: "pointer",
+            marginBottom: 4,
+            }}
+            onClick={() => {
+            if (stageRef.current) {
+                zoomStage(stageRef.current, 1.2);
+            }
+            }}
+        >
+            +
         </button>
         <button
-          onClick={() => {
+            style={{
+            fontSize: 20,
+            padding: "4px 12px",
+            border: "none",
+            background: "#1976d2",
+            color: "white",
+            borderRadius: 4,
+            cursor: "pointer",
+            }}
+            onClick={() => {
             if (stageRef.current) {
-              zoomStage(stageRef.current, 0.8);
+                zoomStage(stageRef.current, 0.8);
             }
-          }}
+            }}
         >
-          -
+            –
         </button>
-      </div>
+        </div>
     </React.Fragment>
   );
 };

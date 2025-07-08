@@ -13,6 +13,7 @@ import { CSS } from "@dnd-kit/utilities";
 import useStore from "../../store";
 import type { Region } from "../../store";
 
+
 type RegionItemProps = {
   region: Region;
   onRemove: (id: string | number) => void;

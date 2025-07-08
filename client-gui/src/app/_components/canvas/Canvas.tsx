@@ -8,17 +8,14 @@ import BaseImage from './BaseImage';
 import useStore from '../../store';
 
 let id = 1;
-
+ // the function will return pointer position relative to the passed node
 function getRelativePointerPosition(node: Konva.Node) {
-  // the function will return pointer position relative to the passed node
   const transform = node.getAbsoluteTransform().copy();
   // to detect relative position we need to invert transform
   transform.invert();
-
   // get pointer (say mouse or touch) position 
   const stage = node.getStage();
   const pos = stage ? stage.getPointerPosition() : null;
-
   // now we find relative point
   return pos ? transform.point(pos) : { x: 0, y: 0 };
 }
@@ -75,18 +72,16 @@ function limitAttributes(stage: Konva.Stage, newAttrs: { x: number; y: number; s
   return { x, y, scale };
 }
 
-const Canvas =  () => {
+const Canvas = () => {
   const stageRef = React.useRef<Konva.Stage>(null);
-const width = useStore(s => s.width);
-const height = useStore(s => s.height);
+  const width = useStore(s => s.width);
+  const height = useStore(s => s.height);
   const setSize = useStore((s) => s.setSize);
   const scale = useStore((state) => state.scale);
   const isDrawing = useStore((state) => state.isDrawing);
   const toggleDrawing = useStore((state) => state.toggleIsDrawing);
-
   const regions = useStore((state) => state.regions);
   const setRegions = useStore((state) => state.setRegions);
-
   const selectRegion = useStore((s) => s.selectRegion);
 
   React.useEffect(() => {

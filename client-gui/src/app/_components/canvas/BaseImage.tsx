@@ -14,7 +14,7 @@ export default () => {
   const setSize = useStore(state => state.setSize);
   const width = useStore(state => state.width);
   const height = useStore(state => state.height);
-
+ 
 //   const { brightness } = useStore();
 
   React.useEffect(() => {
@@ -25,11 +25,11 @@ export default () => {
     setScale(scale);
     setImageSize({ width: image.width, height: image.height });
 
-    const ratio = image.width / image.height;
-    setSize({
-      width: width,
-      height: width / ratio
-    });
+    // const ratio = image.width / image.height;
+    // setSize({
+    //   width: width,
+    //   height: width / ratio
+    // });
   }, [image, width, height, setScale, setImageSize, setSize]);
 
   const layerRef = React.useRef(null);

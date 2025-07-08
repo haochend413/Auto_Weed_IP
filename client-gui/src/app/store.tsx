@@ -39,12 +39,12 @@ interface StoreState {
 }
 
 const useStore = create<StoreState>(set => ({
-    width: 200,
-    height: 200,
+    width: 640,
+    height: 640,
     setSize: ({ width, height }: Size) => set({ width, height }),
 
-    imageWidth: 100,
-    imageHeight: 100,
+    imageWidth: 640,
+    imageHeight: 640,
 
     setImageSize: (size: Size) =>
         set(() => ({ imageWidth: size.width, imageHeight: size.height })),

@@ -22,7 +22,6 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-konva": "^19.0.7",
-    "react-sortable-hoc": "^2.0.0",
     "use-image": "^1.1.4",
     "webpack": "^5.99.9",
     "zustand": "^5.0.6"

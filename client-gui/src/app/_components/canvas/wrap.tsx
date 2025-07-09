@@ -1,9 +1,10 @@
+"use client";
 import React from "react";
 import dynamic from 'next/dynamic';
 
 const Canvas = dynamic(() => import('./Canvas'), { ssr: false });
 import RegionsList from "./RegionsList";
-import useStore from "../../store";
+// import useStore from "../../store";
 
 const Wrap =  () => {
 
@@ -19,4 +20,4 @@ const Wrap =  () => {
   );
 };
 
-export default Wrap;
+export default Wrap; 

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Image, Layer } from "react-konva";
 import useImage from "use-image";
@@ -14,7 +15,7 @@ export default () => {
   const setSize = useStore(state => state.setSize);
   const width = useStore(state => state.width);
   const height = useStore(state => state.height);
- 
+  
 //   const { brightness } = useStore();
 
   React.useEffect(() => {

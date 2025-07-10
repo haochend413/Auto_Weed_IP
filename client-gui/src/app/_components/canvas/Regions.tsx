@@ -1,44 +1,79 @@
-import React from "react";
-import { Layer, Line } from "react-konva";
+import React, { useEffect, useRef } from "react";
+import Konva from "konva";
 
 import useStore from "../../store";
 
-export default () => {
-  const regions = useStore(s => s.regions);
-  const layerRef = React.useRef(null);
-
+export default function Regions() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const layerRef = useRef<Konva.Layer | null>(null);
   const selectedId = useStore(s => s.selectedRigionId);
   const selectRegion = useStore(s => s.selectRegion);
+  const regions = useStore(s => s.regions);
 
-  return (
-    <Layer ref={layerRef}>
-      {regions.map(region => {
-        const isSelected = region.id === selectedId;
-        return (
-          <React.Fragment key={region.id}>
-            {/* first we need to erase previous drawings */}
-            {/* we can do it with  destination-out blend mode */}
-            <Line
-              globalCompositeOperation="destination-out"
-              points={region.points.flatMap(p => [p.x, p.y])}
-              fill="black"
-              listening={false}
-              closed
-            />
-            {/* then we just draw new region */}
-            <Line
-              name="region"
-              points={region.points.flatMap(p => [p.x, p.y])}
-              fill={region.color}
-              closed
-              opacity={isSelected ? 1 : 0.8}
-              onClick={() => {
-                selectRegion(region.id);
-              }}
-            />
-          </React.Fragment>
-        );
-      })}
-    </Layer>
-  );
-};
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    if (!layerRef.current) {
+      layerRef.current = new Konva.Layer();
+    }
+
+    const layer = layerRef.current;
+
+    // Clear previous shapes
+    layer.destroyChildren();
+
+    // For each region, draw the "erase" and then the fill lines
+    regions.forEach(region => {
+      const points = region.points.flatMap(p => [p.x, p.y]);
+
+      // "Erase" previous drawing with destination-out
+      const eraseLine = new Konva.Line({
+        points,
+        fill: "black",
+        closed: true,
+        listening: false,
+        globalCompositeOperation: "destination-out",
+      });
+      layer.add(eraseLine);
+
+      // Draw the region fill
+      const fillLine = new Konva.Line({
+        points,
+        fill: region.color,
+        closed: true,
+        opacity: region.id === selectedId ? 1 : 0.8,
+        name: "region",
+      });
+
+      fillLine.on("click", () => {
+        selectRegion(region.id);
+      });
+
+      layer.add(fillLine);
+    });
+
+    layer.draw();
+
+    // Attach the layer to stage/container once if not already attached
+    if (!layer.getStage()) {
+      // Create a Konva.Stage if not already created and attach the layer
+      if (!containerRef.current) return;
+
+      // Store the stage instance on the container DOM node for reuse
+      let stage = (containerRef.current as any)._konvaStage as Konva.Stage | undefined;
+
+      if (!stage) {
+        stage = new Konva.Stage({
+          container: containerRef.current,
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight,
+        });
+        (containerRef.current as any)._konvaStage = stage;
+      }
+
+      stage.add(layer);
+    }
+  }, [regions, selectedId, selectRegion]);
+
+  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
+}

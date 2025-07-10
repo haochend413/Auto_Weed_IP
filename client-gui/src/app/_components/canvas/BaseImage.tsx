@@ -1,48 +1,56 @@
 "use client";
-import React from "react";
-import { Image, Layer } from "react-konva";
-import useImage from "use-image";
-
+import React, { useEffect, useRef } from "react";
+import Konva from "konva";
 import useStore from "../../store";
 
-// const IMAGE_NUMBER = 1 + Math.round(Math.random() * 1);
 const IMAGE_URL = "/image-1.jpg";
-export default () => {
-  const [image] = useImage(IMAGE_URL, "anonymous");
 
-  const setImageSize = useStore(state => state.setImageSize);
-  const setScale = useStore(state => state.setScale);
-  const setSize = useStore(state => state.setSize);
-  const width = useStore(state => state.width);
-  const height = useStore(state => state.height);
-  
-//   const { brightness } = useStore();
+const BaseImage = () => {
+  const setImageSize = useStore((state) => state.setImageSize);
+  const setScale = useStore((state) => state.setScale);
+  const setSize = useStore((state) => state.setSize);
+  const width = useStore((state) => state.width);
+  const height = useStore((state) => state.height);
 
-  React.useEffect(() => {
-    if (!image) {
-      return;
-    }
-    const scale = Math.min(width / image.width, height / image.height);
-    setScale(scale);
-    setImageSize({ width: image.width, height: image.height });
+  const layerRef = useRef<Konva.Layer | null>(null);
+  const imageNodeRef = useRef<Konva.Image | null>(null);
 
-    // const ratio = image.width / image.height;
-    // setSize({
-    //   width: width,
-    //   height: width / ratio
-    // });
-  }, [image, width, height, setScale, setImageSize, setSize]);
+  useEffect(() => {
+    const imageObj = new window.Image();
+    imageObj.crossOrigin = "anonymous";
+    imageObj.src = IMAGE_URL;
 
-  const layerRef = React.useRef(null);
+    imageObj.onload = () => {
+      if (!layerRef.current) {
+        const layer = new Konva.Layer();
+        layerRef.current = layer;
+      }
 
-//   React.useEffect(() => {
-//     const canvas = layerRef.current.getCanvas()._canvas;
-//     canvas.style.filter = `brightness(${(brightness + 1) * 100}%)`;
-//   }, [brightness]);
+      const konvaImage = new Konva.Image({
+        image: imageObj,
+      });
+      imageNodeRef.current = konvaImage;
 
-  return (
-    <Layer ref={layerRef}>
-      <Image image={image} />
-    </Layer>
-  );
+      const stage = konvaImage.getStage() || layerRef.current?.getStage();
+      if (!stage) {
+        console.warn("Stage not available; ensure BaseImage is added to stage correctly.");
+      }
+
+      const scale = Math.min(width / imageObj.width, height / imageObj.height);
+      setScale(scale);
+      setImageSize({ width: imageObj.width, height: imageObj.height });
+
+      layerRef.current?.add(konvaImage);
+      layerRef.current?.batchDraw();
+    };
+
+    return () => {
+      layerRef.current?.destroyChildren();
+      layerRef.current?.destroy();
+    };
+  }, [width, height, setScale, setImageSize, setSize]);
+
+  return null; // naive Konva handles rendering
 };
+
+export default BaseImage;

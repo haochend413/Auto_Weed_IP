@@ -188,7 +188,13 @@ window.addEventListener("keyup", (e) => {
   return (
     <div ref={containerRef} style={{ width: "100%", height: "100%", position: "relative" }}>
       {imageLayerRef.current && <BaseImage layer={imageLayerRef.current} />}
+      <div>
+        <p>Use Mouse To Draw</p>
+         <p>Hold "Space" and drag to change position</p>
+          <p>Pinch to zoom</p>
+      </div>
     </div>
+
   );
 };
 

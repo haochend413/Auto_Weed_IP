@@ -30,6 +30,11 @@ export default function Home() {
         Run
       </button>
       <Wrap />
+            <div>
+        <p>Use Mouse To Draw</p>
+         <p>Hold "Space" and drag to change position</p>
+          <p>Pinch to zoom</p>
+      </div>
     </div>
   );
 }

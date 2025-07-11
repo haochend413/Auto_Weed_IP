@@ -29,16 +29,19 @@ function zoomStage(stage: Konva.Stage, scaleBy: number) {
   stage.batchDraw();
 }
 
+interface CanvasProps {
+  stageRef?: React.RefObject<Konva.Stage | null>;
+}
 
-const Canvas = () => {
+const Canvas = ({ stageRef }: CanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<Konva.Stage | null>(null);
+  const localStageRef = useRef<Konva.Stage | null>(null);
   const imageLayerRef = useRef<Konva.Layer | null>(null);
   const regionLayerRef = useRef<Konva.Layer | null>(null);
 
-  const width = useStore((s) => s.width);
+  const width = useStore((s) => s.imageWidth);
   const height = useStore((s) => s.height);
-  const setSize = useStore((s) => s.setSize);
+  const setSize = useStore((s) => s.setImageSize); 
   const isDrawing = useStore((s) => s.isDrawing);
   const toggleDrawing = useStore((s) => s.toggleIsDrawing);
   const regions = useStore((s) => s.regions);
@@ -46,10 +49,11 @@ const Canvas = () => {
   const selectRegion = useStore((s) => s.selectRegion);
 
   // --- Fix: keep refs to always-latest state for event handlers ---
-  const regionsRef = useRef(regions);
+  const regionsRef = useRef(regions); 
   const isDrawingRef = useRef(isDrawing);
   useEffect(() => { regionsRef.current = regions; }, [regions]);
   useEffect(() => { isDrawingRef.current = isDrawing; }, [isDrawing]);
+
 
   // Initialize stage and layers only once on mount
   useEffect(() => {
@@ -61,8 +65,11 @@ const Canvas = () => {
       container,
       width,
       height,
-    });
-    stageRef.current = stage;
+    }); 
+    localStageRef.current = stage;
+    if (stageRef) {
+      stageRef.current = stage;
+    }
     let spacePressed = false;
 
 window.addEventListener("keydown", (e) => {
@@ -186,15 +193,18 @@ window.addEventListener("keyup", (e) => {
   }, [regions]);
 
   return (
-    <div ref={containerRef} style={{ width: "100%", height: "100%", position: "relative" }}>
-      {imageLayerRef.current && <BaseImage layer={imageLayerRef.current} />}
-      <div>
-        <p>Use Mouse To Draw</p>
-         <p>Hold "Space" and drag to change position</p>
-          <p>Pinch to zoom</p>
+    <div style={{ position: "relative" }}>
+      <div
+        ref={containerRef}
+        style={{
+          width: width,
+          height: height,
+          position: "relative"
+        }}
+      >
+        {imageLayerRef.current && <BaseImage layer={imageLayerRef.current} />}
       </div>
     </div>
-
   );
 };
 

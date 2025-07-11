@@ -16,7 +16,7 @@ export interface Region {
 interface StoreState {
     width: number;
     height: number;
-    setSize: (size: Size) => void;
+    setSize: (size: Size) => void; 
 
     imageWidth: number;
     imageHeight: number;
@@ -42,7 +42,7 @@ interface StoreState {
 
 const useStore = create<StoreState>(set => ({
     width: 200,
-    height: 500,
+    height: 640,
     setSize: ({ width, height }: Size) => set({ width, height }),
 
     imageWidth: 0, 

@@ -17,7 +17,7 @@ export default function Regions() {
       layerRef.current = new Konva.Layer();
     }
 
-    const layer = layerRef.current;
+    const layer = layerRef.current; 
 
     // Clear previous shapes
     layer.destroyChildren();

@@ -14,7 +14,7 @@ import useStore from "../../_store/canvas";
 import type { Region } from "../../_store/canvas";
 
 
-type RegionItemProps = {
+type RegionItemProps = {  
   region: Region;
   onRemove: (id: string | number) => void;
 };

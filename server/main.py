@@ -15,7 +15,7 @@ app.include_router(gui_router, prefix="/gui")
 # security
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # or ["*"] for all origins
+    allow_origins=["http://localhost:3000", "https://auto-weed-ip.vercel.app"],  # or ["*"] for all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

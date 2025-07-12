@@ -6,6 +6,7 @@ import useStore from "../../store";
 const IMAGE_URL = "/image-1.jpg";
 
 const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
+  //use size to set baseimage; 
   const setImageSize = useStore((state) => state.setImageSize);
   const setScale = useStore((state) => state.setScale);
   const width = useStore((state) => state.width);

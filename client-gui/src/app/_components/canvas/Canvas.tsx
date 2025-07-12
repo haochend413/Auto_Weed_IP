@@ -6,6 +6,7 @@ import BaseImage from "./BaseImage";
 
 let id = 1;
 
+//draw with pointer
 function getRelativePointerPosition(node: Konva.Stage) {
   const transform = node.getAbsoluteTransform().copy();
   transform.invert();
@@ -13,6 +14,7 @@ function getRelativePointerPosition(node: Konva.Stage) {
   return pos ? transform.point(pos) : { x: 0, y: 0 };
 }
 
+//on pinch zoom function
 function zoomStage(stage: Konva.Stage, scaleBy: number) {
   const oldScale = stage.scaleX();
   const mousePointTo = {
@@ -34,14 +36,15 @@ interface CanvasProps {
 }
 
 const Canvas = ({ stageRef }: CanvasProps) => {
+  //used for rendering the Konva elements
   const containerRef = useRef<HTMLDivElement>(null);
-  const localStageRef = useRef<Konva.Stage | null>(null);
+
   const imageLayerRef = useRef<Konva.Layer | null>(null);
   const regionLayerRef = useRef<Konva.Layer | null>(null);
 
-  const width = useStore((s) => s.imageWidth);
+  const width = useStore((s) => s.width);
   const height = useStore((s) => s.height);
-  const setSize = useStore((s) => s.setImageSize); 
+  const setSize = useStore((s) => s.setSize); 
   const isDrawing = useStore((s) => s.isDrawing);
   const toggleDrawing = useStore((s) => s.toggleIsDrawing);
   const regions = useStore((s) => s.regions);
@@ -66,27 +69,28 @@ const Canvas = ({ stageRef }: CanvasProps) => {
       width,
       height,
     }); 
-    localStageRef.current = stage;
+    // localStageRef.current = stage;
     if (stageRef) {
       stageRef.current = stage;
     }
+
     let spacePressed = false;
 
-window.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    spacePressed = true;
-    stage.draggable(true);
-    stage.container().style.cursor = "grab";
-  }
-});
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        spacePressed = true;
+        stage.draggable(true);
+        stage.container().style.cursor = "grab";
+      }
+    });
 
-window.addEventListener("keyup", (e) => {
-  if (e.code === "Space") {
-    spacePressed = false;
-    stage.draggable(false);
-    stage.container().style.cursor = "default";
-  }
-});
+    window.addEventListener("keyup", (e) => {
+      if (e.code === "Space") {
+        spacePressed = false;
+        stage.draggable(false);
+        stage.container().style.cursor = "default";
+      }
+    });
 
     const imageLayer = new Konva.Layer();
     imageLayerRef.current = imageLayer;
@@ -160,6 +164,7 @@ window.addEventListener("keyup", (e) => {
         stage.size({ width: container.offsetWidth, height });
       }
     };
+
     resize();
     window.addEventListener("resize", resize);
 
@@ -181,7 +186,7 @@ window.addEventListener("keyup", (e) => {
       const line = new Konva.Line({
         points: region.points.flatMap((p) => [p.x, p.y]),
         stroke: region.color,
-        strokeWidth: 2,
+        strokeWidth: 0.5,
         closed: true,
         fill: region.color + "33",
         name: "region",
@@ -192,13 +197,13 @@ window.addEventListener("keyup", (e) => {
     regionLayer.batchDraw();
   }, [regions]);
 
-  return (
+  return ( 
     <div style={{ position: "relative" }}>
       <div
         ref={containerRef}
         style={{
           width: width,
-          height: height,
+          height: height, 
           position: "relative"
         }}
       >

@@ -47,8 +47,6 @@ def run(
 ):
     print("request received")
     try:
-        # is this right? maybe
-        # create a temp dir for auto-deletion
         # Choose model path & config file based on operation
         if operation == "detect":
             config_path = Path(__file__).parent.parent / "configs" / "detect.yaml"
@@ -63,56 +61,54 @@ def run(
                 status_code=400, content={"error": f"Unknown operation: {operation}"}
             )
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmpdir_path = Path(tmpdir)
+        # Define raw_upload and processed folders
+        base_dir = Path(__file__).parent.parent.parent
+        raw_upload_dir = base_dir / "raw_upload"
+        processed_dir = base_dir / "processed"
+        raw_upload_dir.mkdir(exist_ok=True)
+        processed_dir.mkdir(exist_ok=True)
 
-            # save images
-            for img in images:
-                img_path = tmpdir_path / img.filename
-                with img_path.open("wb") as buffer:
-                    shutil.copyfileobj(img.file, buffer)
+        for img in images:
+            img_path = raw_upload_dir / img.filename
+            with img_path.open("wb") as buffer:
+                shutil.copyfileobj(img.file, buffer)
 
-            output_dir = Path(__file__).parent.parent.parent / "runs"
+        if manual:
+            runAll(str(raw_upload_dir), processed_dir)
+        else:
+            model = models[operation]
+            result = model(source=str(raw_upload_dir), save=True, show_conf=False)
+            # If other things require, use yaml instead
+            # result = model(source=str(raw_upload_dir), save=True, cfg=config_path)
 
-            # whether manually or auto (for single operation)
-            if manual:
-                runAll(str(tmpdir_path), output_dir)
-            else:
-                model = models[operation]
-                # here the model is used;
-                result = model(source=str(tmpdir_path), save=True, show_conf=False)
-                # if other things require, use yaml instead
-                # result = model(source=str(tmpdir_path), save=True, cfg=config_path)
-                # output result
+        # buffer to store & send zip file
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w") as zip_file:
+            for file_path in processed_dir.rglob("*"):
+                if file_path.is_file():
+                    zip_file.write(
+                        file_path, arcname=file_path.relative_to(processed_dir)
+                    )
+        zip_buffer.seek(0)
 
-            # buffer to store & send zip file
-            zip_buffer = io.BytesIO()
-            with zipfile.ZipFile(zip_buffer, "w") as zip_file:
-                for file_path in output_dir.rglob("*"):
-                    if file_path.is_file():
-                        zip_file.write(
-                            file_path, arcname=file_path.relative_to(output_dir)
-                        )
-            zip_buffer.seek(0)
+        #freeup server space after task
+        def clear_processed():
+            for item in processed_dir.iterdir():
+                if item.is_dir():
+                    shutil.rmtree(item, ignore_errors=True)
+                else:
+                    item.unlink(missing_ok=True)
 
-            # bgtask: free server space after sending result to user
-            def clear_runs():
-                for item in output_dir.iterdir():
-                    if item.is_dir():
-                        shutil.rmtree(item, ignore_errors=True)
-                    else:
-                        item.unlink(missing_ok=True)
+        if background_tasks is not None:
+            background_tasks.add_task(clear_processed)
 
-            if background_tasks is not None:
-                background_tasks.add_task(clear_runs)
-
-            return StreamingResponse(
-                zip_buffer,
-                media_type="application/x-zip-compressed",
-                headers={
-                    "Content-Disposition": 'attachment; filename="yolo_results.zip"'
-                },
-            )
+        return StreamingResponse(
+            zip_buffer,
+            media_type="application/x-zip-compressed",
+            headers={
+                "Content-Disposition": 'attachment; filename="yolo_results.zip"'
+            },
+        )
 
     except Exception as e:
         import traceback
@@ -138,7 +134,7 @@ def runAll(src: str, output_dir: str):
     # draw
 
     # read and get all images
-    image_paths = glob.glob(src + "/*.jpg")
+    image_paths = glob.glob(str(src) + "/*.jpg")
     for img_path in image_paths:
         img_name = Path(img_path).name
         img = cv2.imread(img_path)
@@ -194,4 +190,4 @@ def runAll(src: str, output_dir: str):
             )
 
         # Save the annotated image
-        cv2.imwrite(str(output_dir / f"{img_name}.jpg"), img)
+        cv2.imwrite(str(Path(output_dir) / f"{img_name}.jpg"), img)

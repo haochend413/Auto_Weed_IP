@@ -41,7 +41,7 @@ interface StoreState {
 }
 
 const useStore = create<StoreState>(set => ({
-    width: 200,
+    width: 100,
     height: 640,
     setSize: ({ width, height }: Size) => set({ width, height }),
 

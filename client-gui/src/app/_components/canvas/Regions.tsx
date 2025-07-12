@@ -29,7 +29,7 @@ export default function Regions() {
       // "Erase" previous drawing with destination-out
       const eraseLine = new Konva.Line({
         points,
-        fill: "black",
+        fill: "black", 
         closed: true,
         listening: false,
         globalCompositeOperation: "destination-out",

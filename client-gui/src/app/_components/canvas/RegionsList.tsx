@@ -10,8 +10,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import useStore from "../../store";
-import type { Region } from "../../store";
+import useStore from "../../_store/canvas";
+import type { Region } from "../../_store/canvas";
 
 
 type RegionItemProps = {

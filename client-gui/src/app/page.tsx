@@ -3,29 +3,37 @@
 import React, { useState } from "react";
 import Settings from "./_components/settings";
 import Wrap from "./_components/canvas/wrap";
+import  useImageStore  from "./_store/img";
 
 export default function Home() {
-  const [selectedOps, setSelectedOps] = useState<string[]>([]);
-  const handleRun = async (images: File[]) => {
-    //if multiple, use "all", otherwise use the selected one
-    let operation = "all";
-    if (selectedOps.length === 1) { 
-      operation = selectedOps[0];
-    } 
+  const imageUrl = useImageStore((s) => s.imageUrl)
+    const setImageUrl = useImageStore((s) => s.setImageUrl)
 
-    const formData = new FormData();
-    images.forEach(img => formData.append("images", img));
- 
-    const res = await fetch(`http://localhost:8000/${operation}`, {
+  const [selectedOps, setSelectedOps] = useState<string[]>([]);
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; 
+    if (!file) return; 
+    const formData = new FormData(); 
+    formData.append("img", file); 
+    const res = await fetch("http://127.0.0.1:8000/gui/upload", {
       method: "POST",
       body: formData,
-    });
-    //handle response
+    }); 
+    if (res.ok) {
+        const data = await res.json(); 
+        console.log("Upload successful:", data);  
+        console.log(data.url)
+        //update url state for constant rendering; 
+        setImageUrl(`http://127.0.0.1:8000${data.url}`);
+    } else {
+        console.error("Upload failed:", res.status, await res.text());
+    }
+    // handle response (e.g., show filename or success message)
   };
 
   return (
     <div>
-      <Settings onChange={setSelectedOps} />
+      <Settings onChange={setSelectedOps} /> 
       <button>
         Run
       </button>
@@ -35,6 +43,7 @@ export default function Home() {
          <p>Hold "Space" and drag to change position</p>
           <p>Pinch to zoom</p>
       </div>
+      <input type="file" onChange={handleUpload}></input>
     </div>
   );
 }

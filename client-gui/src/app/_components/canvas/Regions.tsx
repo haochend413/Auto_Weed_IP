@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Konva from "konva";
 
-import useStore from "../../store";
+import useStore from "../../_store/canvas";
 
 export default function Regions() {
   const containerRef = useRef<HTMLDivElement>(null);

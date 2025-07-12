@@ -31,7 +31,7 @@ interface StoreState {
     toggleIsDrawing: () => void;
 
     regions: Region[];
-    setRegions: (regions: Region[]) => void;
+    setRegions: (regions: Region[]) => void; 
 
     selectedRigionId: string | number | null;
     selectRegion: (selectedRigionId: string | number | null) => void;

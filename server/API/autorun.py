@@ -62,7 +62,7 @@ def run(
             )
 
         # Define raw_upload and processed folders
-        base_dir = Path(__file__).parent.parent.parent
+        base_dir = Path(__file__).parent.parent
         raw_upload_dir = base_dir / "raw_upload"
         processed_dir = base_dir / "processed"
         raw_upload_dir.mkdir(exist_ok=True)

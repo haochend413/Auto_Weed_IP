@@ -1,12 +1,15 @@
 "use client";
 import React, { useEffect } from "react";
 import Konva from "konva";
-import useStore from "../../store";
+import useStore from "../../_store/canvas";
+import useImageStore from "../../_store/img";
 
-const IMAGE_URL = "/image-1.jpg";
+
+// const IMAGE_URL = "/image-1.jpg";
 
 const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
   //use size to set baseimage; 
+  const imageUrl = useImageStore((s) => s.imageUrl)
   const setImageSize = useStore((state) => state.setImageSize);
   const setScale = useStore((state) => state.setScale);
   const width = useStore((state) => state.width);
@@ -15,8 +18,10 @@ const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
   useEffect(() => {
     const imageObj = new window.Image();
     imageObj.crossOrigin = "anonymous";
-    imageObj.src = IMAGE_URL;
+    imageObj.src = imageUrl ?? ""; 
+    console.log("a") 
 
+    console.log(imageUrl) 
     imageObj.onload = () => {
       const konvaImage = new Konva.Image({ 
         image: imageObj, 
@@ -37,7 +42,7 @@ const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
     return () => {
       layer.destroyChildren();
     };
-  }, [layer, width, height, setScale, setImageSize]);
+  }, [layer, width, height, setScale, setImageSize, imageUrl]);
 
   return null;
 };

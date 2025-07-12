@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import Konva from "konva";
-import useStore from "../../store";
+import useStore from "../../_store/canvas";
 import BaseImage from "./BaseImage";
 
 let id = 1;

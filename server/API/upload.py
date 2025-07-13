@@ -32,7 +32,7 @@ def upload(img: UploadFile = File(...)):
     processed_dir.mkdir(exist_ok=True) 
 
     img_path = raw_upload_dir / img.filename
-    with img_path.open("wb") as buffer:
+    with img_path.open("wb") as buffer: 
         shutil.copyfileobj(img.file, buffer)
     return {"filename": img.filename, "url": f"/raw_upload/{img.filename}"}
 

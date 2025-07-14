@@ -47,7 +47,7 @@ func SendImageProcessRequest(operation string) {
 
 	// Send the POST request
 	// This is direct: one step, both operations; only talk once;
-	resp, err := http.Post("http://127.0.0.1:8000/model/"+operation, writer.FormDataContentType(), &buf)
+	resp, err := http.Post("http://127.0.0.1:8000/model/auto/"+operation, writer.FormDataContentType(), &buf)
 	// fmt.Println("Content-Length:", resp.Header.Get("Content-Length"))
 	if err != nil {
 		panic(err)

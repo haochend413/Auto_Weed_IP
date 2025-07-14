@@ -31,21 +31,21 @@ var inputPath string
 // 	Short: "classify",
 // 	Long:  "Weed Classification",
 
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		SendImageProcessRequest("classify")
-// 	},
-// }
+//		Run: func(cmd *cobra.Command, args []string) {
+//			SendImageProcessRequest("classify")
+//		},
+//	}
 
 var runCmd = &cobra.Command{
 	Use:   "r",
 	Short: "run",
 	Run: func(cmd *cobra.Command, args []string) {
 		if cmd.Flags().Changed("det") {
-			SendImageProcessRequest("detection")
+			SendImageProcessRequest("detect")
 		} else if cmd.Flags().Changed("seg") {
-			SendImageProcessRequest("segmentation")
+			SendImageProcessRequest("segment")
 		} else if cmd.Flags().Changed("cls") {
-			SendImageProcessRequest("classification")
+			SendImageProcessRequest("classify")
 		} else if cmd.Flags().Changed("all") {
 			SendImageProcessRequest("all")
 		} else {
@@ -63,5 +63,4 @@ func init() {
 	// runCmd.MarkFlagRequired("cls")
 	runCmd.Flags().StringVarP(&inputPath, "all", "a", "", "all operations on folder")
 	// runCmd.MarkFlagRequired("all")
-
 }

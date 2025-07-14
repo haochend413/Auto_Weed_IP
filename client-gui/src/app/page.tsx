@@ -71,21 +71,7 @@ return (
         <>
           <h1 style={{ color: "#1976d2", fontWeight: 800, fontSize: 28, letterSpacing: 1, marginBottom: 18 }}>Auto Weed Annotator</h1>
           <Settings onChange={setSelectedOps} />
-          <button style={{
-            background: "#43a047",
-            color: "white",
-            border: "none",
-            borderRadius: 10,
-            padding: "10px 24px",
-            fontWeight: 700,
-            fontSize: 18,
-            margin: "24px 0 12px 0",
-            boxShadow: "0 2px 8px rgba(67,160,71,0.18)",
-            cursor: "pointer",
-            transition: "background 0.2s",
-          }}>
-            Run
-          </button>
+
           <div style={{ marginTop: 12, marginBottom: 12 }}>
             <h2 style={{ color: "#1976d2", fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Instructions</h2>
             <ul style={{ lineHeight: 1.6, fontSize: 15, color: "#333", marginBottom: 8, paddingLeft: 18 }}>

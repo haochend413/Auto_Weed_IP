@@ -26,7 +26,7 @@ export default function Regions() {
     regions.forEach(region => {
       const points = region.points.flatMap(p => [p.x, p.y]);
 
-      // "Erase" previous drawing with destination-out
+      // "Erase" previous drawing with destination-out  
       const eraseLine = new Konva.Line({
         points,
         fill: "black", 

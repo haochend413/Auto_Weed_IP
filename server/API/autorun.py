@@ -4,6 +4,7 @@ from fastapi import (
     File,
     APIRouter,
     BackgroundTasks,
+    Body,
     Path as FastAPIPath,
 )
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -16,6 +17,8 @@ import io
 import cv2
 import glob
 import numpy as np
+from pydantic import BaseModel
+
 
 model_router = APIRouter()
 
@@ -39,7 +42,7 @@ models["classify"].model.names = {
 }
 
 
-@model_router.post("/{operation}")
+@model_router.post("/auto/{operation}")
 def run(
     background_tasks: BackgroundTasks,
     operation: str = FastAPIPath(..., description="Model Type"),
@@ -47,7 +50,9 @@ def run(
 ):
     print("request received")
     try:
+        manual = False
         # Choose model path & config file based on operation
+
         if operation == "detect":
             config_path = Path(__file__).parent.parent / "configs" / "detect.yaml"
         elif operation == "segment":
@@ -57,6 +62,7 @@ def run(
         elif operation == "all":
             manual = True
         else:
+            print(operation)
             return JSONResponse(
                 status_code=400, content={"error": f"Unknown operation: {operation}"}
             )
@@ -74,10 +80,15 @@ def run(
                 shutil.copyfileobj(img.file, buffer)
 
         if manual:
-            runAll(str(raw_upload_dir), processed_dir)
+            runCombined(CombinedRequest(ops=[False, True, True]))
         else:
             model = models[operation]
-            result = model(source=str(raw_upload_dir), save=True, show_conf=False)
+            result = model(
+                source=str(raw_upload_dir),
+                save=True,
+                show_conf=False,
+                project=processed_dir,
+            )
             # If other things require, use yaml instead
             # result = model(source=str(raw_upload_dir), save=True, cfg=config_path)
 
@@ -91,7 +102,7 @@ def run(
                     )
         zip_buffer.seek(0)
 
-        #freeup server space after task
+        # freeup server space after task
         def clear_processed():
             for item in processed_dir.iterdir():
                 if item.is_dir():
@@ -105,9 +116,7 @@ def run(
         return StreamingResponse(
             zip_buffer,
             media_type="application/x-zip-compressed",
-            headers={
-                "Content-Disposition": 'attachment; filename="yolo_results.zip"'
-            },
+            headers={"Content-Disposition": 'attachment; filename="yolo_results.zip"'},
         )
 
     except Exception as e:
@@ -118,20 +127,43 @@ def run(
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
+class CombinedRequest(BaseModel):
+    ops: list[bool]
+
+
+@model_router.post("/combined")
 # helper fun runAll
-def runAll(src: str, output_dir: str):
+def runCombined(request: CombinedRequest = Body(...)):
     """
     Run all the models and manually draw the results.
     """
+    ops = request.ops
+    base_dir = Path(__file__).parent.parent
+    raw_upload_dir = base_dir / "raw_upload"
+    processed_dir = base_dir / "processed"
+    raw_upload_dir.mkdir(exist_ok=True)
+    processed_dir.mkdir(exist_ok=True)
 
-    res_dec = models["detect"](source=src, save=False, show_conf=False)
-    res_seg = models["segment"](source=src, save=False, show_conf=False)
-    res_cls = models["classify"](source=src, save=False, show_conf=False)
+    src = str(raw_upload_dir)
 
-    res_dec_map = {Path(r.path).name: r for r in res_dec}
-    res_seg_map = {Path(r.path).name: r for r in res_seg}
-    res_cls_map = {Path(r.path).name: r for r in res_cls}
-    # draw
+    # Only run models that are enabled in ops
+    res_dec = res_seg = res_cls = None
+    res_dec_map = res_seg_map = res_cls_map = {}
+    if ops[0]:
+        res_dec = models["detect"](
+            source=src, save=False, show_conf=False, project=processed_dir
+        )
+        res_dec_map = {Path(r.path).name: r for r in res_dec}
+    if ops[1]:
+        res_seg = models["segment"](
+            source=src, save=False, show_conf=False, project=processed_dir
+        )
+        res_seg_map = {Path(r.path).name: r for r in res_seg}
+    if ops[2]:
+        res_cls = models["classify"](
+            source=src, save=False, show_conf=False, project=processed_dir
+        )
+        res_cls_map = {Path(r.path).name: r for r in res_cls}
 
     # read and get all images
     image_paths = glob.glob(str(src) + "/*.jpg")
@@ -139,55 +171,61 @@ def runAll(src: str, output_dir: str):
         img_name = Path(img_path).name
         img = cv2.imread(img_path)
 
-        # retrieve matching result
-        res_dec_r = res_dec_map[img_name]
-        res_seg_r = res_seg_map[img_name]
-        res_cls_r = res_cls_map[img_name]
-        boxes = res_dec_r.boxes
-
-        for box in boxes:
-            xyxy = box.xyxy[0].cpu().numpy().astype(int)
-            cv2.rectangle(img, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (255, 0, 0), 2)
-            cv2.putText(
-                img,
-                f"{int(box.cls.item())} {box.conf.item():.2f}",
-                (xyxy[0], xyxy[1] - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.5,
-                (255, 0, 0),
-                2,
-            )
+        # Draw detection boxes
+        if ops[0] and img_name in res_dec_map:
+            res_dec_r = res_dec_map[img_name]
+            boxes = res_dec_r.boxes
+            for box in boxes:
+                xyxy = box.xyxy[0].cpu().numpy().astype(int)
+                cv2.rectangle(
+                    img, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (255, 0, 0), 2
+                )
+                cv2.putText(
+                    img,
+                    f"{int(box.cls.item())} {box.conf.item():.2f}",
+                    (xyxy[0], xyxy[1] - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (255, 0, 0),
+                    2,
+                )
 
         # Draw segmentation masks
-        masks = res_seg_r.masks
-        if masks is not None:
-            masks_data = masks.data.cpu().numpy()
-            seg_boxes = res_seg_r.boxes
-            for mask_idx in range(masks_data.shape[0]):
-                mask = masks_data[mask_idx] * 255
-                colored_mask = cv2.merge([mask.astype("uint8")] * 3)
-                color = np.random.randint(0, 255, size=3).tolist()
-                colored_mask = (colored_mask * (np.array(color) / 255)).astype("uint8")
-                if colored_mask.shape != img.shape:
-                    colored_mask = cv2.resize(
-                        colored_mask, (img.shape[1], img.shape[0])
+        if ops[1] and img_name in res_seg_map:
+            res_seg_r = res_seg_map[img_name]
+            masks = res_seg_r.masks
+            if masks is not None:
+                masks_data = masks.data.cpu().numpy()
+                seg_boxes = res_seg_r.boxes
+                for mask_idx in range(masks_data.shape[0]):
+                    mask = masks_data[mask_idx] * 255
+                    colored_mask = cv2.merge([mask.astype("uint8")] * 3)
+                    color = np.random.randint(0, 255, size=3).tolist()
+                    colored_mask = (colored_mask * (np.array(color) / 255)).astype(
+                        "uint8"
                     )
-                img = cv2.addWeighted(img, 1.0, colored_mask, 1, 0)
+                    if colored_mask.shape != img.shape:
+                        colored_mask = cv2.resize(
+                            colored_mask, (img.shape[1], img.shape[0])
+                        )
+                    img = cv2.addWeighted(img, 1.0, colored_mask, 1, 0)
 
         # Draw classification result
-        probs = res_cls_r.probs
-        if probs is not None:
-            top1 = probs.top1
-            label = models["classify"].model.names[top1]
-            cv2.putText(
-                img,
-                f"Classification: {label}",
-                (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1.0,
-                (0, 255, 255),
-                2,
-            )
+        if ops[2] and img_name in res_cls_map:
+            res_cls_r = res_cls_map[img_name]
+            probs = res_cls_r.probs
+            if probs is not None:
+                top1 = probs.top1
+                label = models["classify"].model.names[top1]
+                cv2.putText(
+                    img,
+                    f"Classification: {label}",
+                    (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0,
+                    (0, 255, 255),
+                    2,
+                )
 
         # Save the annotated image
-        cv2.imwrite(str(Path(output_dir) / f"{img_name}.jpg"), img)
+        cv2.imwrite(str(Path(processed_dir) / f"{img_name}.jpg"), img)

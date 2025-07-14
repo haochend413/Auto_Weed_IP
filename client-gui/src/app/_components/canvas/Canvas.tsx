@@ -204,7 +204,7 @@ const Canvas = ({ stageRef }: CanvasProps) => {
         style={{
           width: width,
           height: height, 
-          position: "relative"
+          position: "relative" 
         }}
       >
         {imageLayerRef.current && <BaseImage layer={imageLayerRef.current} />}

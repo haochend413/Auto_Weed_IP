@@ -20,8 +20,9 @@ export default function Home() {
     const urls = [
 
       //after construction, need to register this to a stable deployer;  
-      "https://192.168.10.252:8000", // try LAN first // this will not work due to mixed https / http
-      "http://localhost:8000",
+      // "http://10.192.227.142", // for illinoisNet
+      // "http://192.168.10.252:8000", // for VUE // this will not work due to mixed https / http
+      "http://localhost:8000", //local 
     ];
     (async () => {
       for (const url of urls) {

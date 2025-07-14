@@ -22,9 +22,7 @@ interface StoreState {
     imageHeight: number;
     setImageSize: (size: Size) => void;
 
-
-
-    scale: number;
+    scale: number; 
     setScale: (scale: number) => void;
 
     isDrawing: boolean;

@@ -1,23 +1,47 @@
 "use client";
 // Example: /client-gui/src/app/page.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import Settings from "./_components/settings";
 import Wrap from "./_components/canvas/wrap";
 import  useImageStore  from "./_store/img";
+import useServerStore from "./_store/server";
 
 export default function Home() {
   const imageUrl = useImageStore((s) => s.imageUrl)
+  const setImageUrl = useImageStore((s) => s.setImageUrl)
   const [folded, setFolded] = useState(false);
-    const setImageUrl = useImageStore((s) => s.setImageUrl)
-
   const [selectedOps, setSelectedOps] = useState<string[]>([]);
+  const baseServerURL = useServerStore((s) => s.baseServerURL)
+  const setBaseServerURL = useServerStore((s) => s.setBaseServerURL) 
+  useEffect(() => {
+    // Try possible backend URLs at startup
+    const urls = [
+      "http://192.168.10.252:8000", // try LAN first
+      "http://localhost:8000",
+    ];
+    (async () => {
+      for (const url of urls) {
+        try {
+          const res = await fetch(url + "/");
+          if (res.ok) {
+            setBaseServerURL(url);
+            console.log("Connected to backend:", url);
+            break;
+          }
+        } catch (err) {
+          console.log("Connection failed: " + url)
+        }
+      }
+    })();
+  }, []);
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; 
     if (!file) return; 
-    const formData = new FormData(); 
+    const formData = new FormData();  
     formData.append("img", file); 
-    const res = await fetch("http://127.0.0.1:8000/gui/upload", {
-      method: "POST",
+    const res = await fetch(baseServerURL + "/gui/upload", {
+      method: "POST", 
       body: formData,
     }); 
     if (res.ok) {
@@ -25,7 +49,7 @@ export default function Home() {
         console.log("Upload successful:", data);  
         console.log(data.url)
         //update url state for constant rendering; 
-        setImageUrl(`http://127.0.0.1:8000${data.url}`);
+        setImageUrl(baseServerURL + `${data.url}`);
     } else {
         console.error("Upload failed:", res.status, await res.text());
     }

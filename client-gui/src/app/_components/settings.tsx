@@ -3,12 +3,14 @@ import React, { useState, useEffect } from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 import useModelStore from '../_store/model';
+import useServerStore from '../_store/server';
 import "./style.css"
 
 
 const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   const runOps = useModelStore((s) => s.runOps);
   const setRunOps = useModelStore((s) => s.setRunOps);
+  const baseServerURL = useServerStore((s) => s.baseServerURL)
 
   // Local state for checkboxes as a Map
   const [checked, setChecked] = useState<Map<string, boolean>>(
@@ -26,7 +28,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
         runOps.get("segment") || false, 
         runOps.get("classify") || false
     ];
-    const response = await fetch("http://127.0.0.1:8000/model/combined", {
+    const response = await fetch(baseServerURL + "/model/combined", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ops: signal , TopOnly: true})
@@ -76,19 +78,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
           Classification
         </label>
       </Stack>
-      <button style={{
-        background: "#43a047",
-        color: "white",
-        border: "none",
-        borderRadius: 10,
-        padding: "10px 24px",
-        fontWeight: 700,
-        fontSize: 18,
-        margin: "24px 0 12px 0",
-        boxShadow: "0 2px 8px rgba(67,160,71,0.18)",
-        cursor: "pointer",
-        transition: "background 0.2s",
-      }} onClick={HandleRun}>
+      <button className='run-btn' onClick={HandleRun}>
         Run
       </button>
     </div>

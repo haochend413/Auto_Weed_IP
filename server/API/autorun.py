@@ -14,6 +14,7 @@ from pathlib import Path
 import zipfile
 import shutil
 import io
+import os
 import cv2
 import glob
 import numpy as np
@@ -89,8 +90,6 @@ def run(
                 show_conf=False,
                 project=processed_dir,
             )
-            # If other things require, use yaml instead
-            # result = model(source=str(raw_upload_dir), save=True, cfg=config_path)
 
         # buffer to store & send zip file
         zip_buffer = io.BytesIO()
@@ -141,6 +140,14 @@ def runCombined(request: CombinedRequest = Body(...)):
     ops = request.ops
     TopOnly = request.TopOnly
 
+    # if everything is false, do nothing
+    allfalse = True
+    for i in ops:
+        if i:
+            allfalse = False
+    if allfalse:
+        return
+
     base_dir = Path(__file__).parent.parent
     raw_upload_dir = base_dir / "raw_upload"
     processed_dir = base_dir / "processed"
@@ -170,10 +177,14 @@ def runCombined(request: CombinedRequest = Body(...)):
 
     # read and get all images
     image_paths = glob.glob(str(src) + "/*.jpg")
-    for index, img_path in enumerate(image_paths):
-        if TopOnly:
-            if index > 0:
-                break
+    if TopOnly:
+        # Sort by modification time, descending, and pick the last added image
+        image_paths = sorted(
+            image_paths, key=lambda x: os.path.getmtime(x), reverse=True
+        )
+        image_paths = image_paths[:1]
+
+    for img_path in image_paths:
         img_name = Path(img_path).name
         img = cv2.imread(img_path)
 
@@ -235,3 +246,7 @@ def runCombined(request: CombinedRequest = Body(...)):
 
         # Save the annotated image
         cv2.imwrite(str(Path(processed_dir) / f"{img_name}.jpg"), img)
+
+        # It should return the data for the canvas component to render on screen.
+        # For direct auto usage, ignore the return value.
+        return

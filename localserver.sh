@@ -1,4 +1,9 @@
 echo "Starting local server"
 cd server
 source venv/bin/activate
-uvicorn main:app --host 0.0.0.0 --reload # use --reload flag for automatic reload;  
+uvicorn your_app_module:app \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --ssl-certfile ./certs/192.168.10.252.pem \
+    --ssl-keyfile ./certs/192.168.10.252-key.pem \
+    --reload

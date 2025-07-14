@@ -18,9 +18,9 @@ export default function Home() {
   useEffect(() => {
     // Try possible backend URLs at startup
     const urls = [
-      "/api", // reverse proxy, only for simple deployment; 
+
       //after construction, need to register this to a stable deployer;  
-      // "http://192.168.10.252:8000", // try LAN first
+      "https://192.168.10.252:8000", // try LAN first // this will not work due to mixed https / http
       "http://localhost:8000",
     ];
     (async () => {

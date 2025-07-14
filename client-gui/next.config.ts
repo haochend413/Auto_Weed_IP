@@ -2,14 +2,6 @@ import type { NextConfig } from 'next';
 import type { Configuration } from 'webpack';
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',                   // frontend path
-        destination: 'http://192.168.10.252:8000/:path*' // backend
-      },
-    ]
-  },
   webpack: (config: Configuration, { isServer }) => {
     if (!config.resolve) {
       config.resolve = {};

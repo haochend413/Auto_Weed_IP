@@ -178,7 +178,7 @@ def runCombined(request: CombinedRequest = Body(...)):
     # read and get all images
     image_paths = glob.glob(str(src) + "/*.jpg")
     if TopOnly:
-        # Sort by modification time, descending, and pick the last added image
+        # Get latest image
         image_paths = sorted(
             image_paths, key=lambda x: os.path.getmtime(x), reverse=True
         )

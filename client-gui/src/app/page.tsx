@@ -13,10 +13,14 @@ export default function Home() {
   const [selectedOps, setSelectedOps] = useState<string[]>([]);
   const baseServerURL = useServerStore((s) => s.baseServerURL)
   const setBaseServerURL = useServerStore((s) => s.setBaseServerURL) 
+
+  // startup setting to get the right url
   useEffect(() => {
     // Try possible backend URLs at startup
     const urls = [
-      "http://192.168.10.252:8000", // try LAN first
+      "/api", // reverse proxy, only for simple deployment; 
+      //after construction, need to register this to a stable deployer;  
+      // "http://192.168.10.252:8000", // try LAN first
       "http://localhost:8000",
     ];
     (async () => {

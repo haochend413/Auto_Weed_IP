@@ -29,7 +29,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     const response = await fetch("http://127.0.0.1:8000/model/combined", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ops: signal })
+      body: JSON.stringify({ ops: signal , TopOnly: true})
     });
     
     const result = await response.json();

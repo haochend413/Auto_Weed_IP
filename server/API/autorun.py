@@ -129,6 +129,7 @@ def run(
 
 class CombinedRequest(BaseModel):
     ops: list[bool]
+    TopOnly: bool
 
 
 @model_router.post("/combined")
@@ -138,6 +139,8 @@ def runCombined(request: CombinedRequest = Body(...)):
     Run all the models and manually draw the results.
     """
     ops = request.ops
+    TopOnly = request.TopOnly
+
     base_dir = Path(__file__).parent.parent
     raw_upload_dir = base_dir / "raw_upload"
     processed_dir = base_dir / "processed"
@@ -167,7 +170,10 @@ def runCombined(request: CombinedRequest = Body(...)):
 
     # read and get all images
     image_paths = glob.glob(str(src) + "/*.jpg")
-    for img_path in image_paths:
+    for index, img_path in enumerate(image_paths):
+        if TopOnly:
+            if index > 0:
+                break
         img_name = Path(img_path).name
         img = cv2.imread(img_path)
 

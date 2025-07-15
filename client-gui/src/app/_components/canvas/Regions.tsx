@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import Konva from "konva";
 
-import useStore from "../../_store/canvas";
+import useCanvasStore from "../../_store/canvas";
 
 export default function Regions() {
   const containerRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<Konva.Layer | null>(null);
-  const selectedId = useStore(s => s.selectedRigionId);
-  const selectRegion = useStore(s => s.selectRegion);
-  const regions = useStore(s => s.regions);
+  const selectedId = useCanvasStore(s => s.selectedRigionId);
+  const selectRegion = useCanvasStore(s => s.selectRegion);
+  const regions = useCanvasStore(s => s.regions);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -23,6 +23,7 @@ export default function Regions() {
     layer.destroyChildren();
 
     // For each region, draw the "erase" and then the fill lines
+    // This is how the stored regions gets rendered; 
     regions.forEach(region => {
       const points = region.points.flatMap(p => [p.x, p.y]);
 
@@ -58,10 +59,8 @@ export default function Regions() {
     if (!layer.getStage()) {
       // Create a Konva.Stage if not already created and attach the layer
       if (!containerRef.current) return;
-
       // Store the stage instance on the container DOM node for reuse
       let stage = (containerRef.current as any)._konvaStage as Konva.Stage | undefined;
-
       if (!stage) {
         stage = new Konva.Stage({
           container: containerRef.current,
@@ -70,7 +69,6 @@ export default function Regions() {
         });
         (containerRef.current as any)._konvaStage = stage;
       }
-
       stage.add(layer);
     }
   }, [regions, selectedId, selectRegion]);

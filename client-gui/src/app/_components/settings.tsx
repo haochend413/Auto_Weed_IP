@@ -4,6 +4,8 @@ import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 import useModelStore from '../_store/model';
 import useServerStore from '../_store/server';
+import useCanvasStore, {Region} from '../_store/canvas';
+
 import "./style.css"
 
 
@@ -11,6 +13,8 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   const runOps = useModelStore((s) => s.runOps);
   const setRunOps = useModelStore((s) => s.setRunOps);
   const baseServerURL = useServerStore((s) => s.baseServerURL)
+  const regions = useCanvasStore((s) => s.regions)
+  const setRegions = useCanvasStore((s) => s.setRegions)
 
   // Local state for checkboxes as a Map
   const [checked, setChecked] = useState<Map<string, boolean>>(
@@ -38,9 +42,24 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     const result = await response.json(); 
     console.log(result)
     const firstImgName = Object.keys(result)[0];
-    const de = result[firstImgName]["segment"];
-    console.log(de)
-    console.log(de);
+    const seg = result[firstImgName]["segment"];
+  
+      //create new region
+      console.log(seg[0])
+      
+    for (const [idx, r] of seg.entries()) {
+      for (const contour of r) { 
+        const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));
+        const newRegion: Region = {
+          id: `region-${idx}`,
+          points: newPoints,
+          color: "#ff0000" 
+        };
+        setRegions([...regions, newRegion]);
+      }
+    }
+   
+      // console.log(regions)
   }
 
   // Sync zustand state with local state

@@ -38,7 +38,7 @@ interface StoreState {
     setBrightness: (brightness: number) => void;
 }
 
-const useStore = create<StoreState>(set => ({
+const useCanvasStore = create<StoreState>(set => ({
     width: 900,
     height: 700,
     setSize: ({ width, height }: Size) => set({ width, height }),
@@ -63,4 +63,4 @@ const useStore = create<StoreState>(set => ({
     setBrightness: (brightness: number) => set({ brightness })
 }));
 
-export default useStore;
+export default useCanvasStore;

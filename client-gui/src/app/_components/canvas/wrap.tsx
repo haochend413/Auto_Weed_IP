@@ -3,7 +3,7 @@ import React, {useRef} from "react";
 import dynamic from 'next/dynamic';
 import Konva from "konva";
 import "./style.css";
-import useStore from "../../_store/canvas";
+import useCanvasStore from "../../_store/canvas";
 const Canvas = dynamic(() => import('./Canvas'), { ssr: false });
 import RegionsList from "./RegionsList";
 // import useStore from "../../store";
@@ -24,7 +24,7 @@ const handleDownload = (stage: Konva.Stage | null) => {
 
  
 const Wrap =  () => {
-  const width = useStore((s) => s.width);
+  const width = useCanvasStore((s) => s.width);
   const stageRef = useRef<Konva.Stage | null>(null); 
   
   return (

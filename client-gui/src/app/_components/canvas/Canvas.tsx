@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import Konva from "konva";
-import useStore from "../../_store/canvas";
+import useCanvasStore from "../../_store/canvas";
 import BaseImage from "./BaseImage";
 
 let id = 1;
@@ -16,8 +16,8 @@ function getRelativePointerPosition(node: Konva.Stage) {
 
 //on pinch zoom function
 function zoomStage(stage: Konva.Stage, scaleBy: number) {
-  const oldScale = stage.scaleX();
-  const mousePointTo = {
+  const oldScale = stage.scaleX(); 
+  const mousePointTo = { 
     x: stage.width() / 2 / oldScale - stage.x() / oldScale,
     y: stage.height() / 2 / oldScale - stage.y() / oldScale,
   };
@@ -42,14 +42,14 @@ const Canvas = ({ stageRef }: CanvasProps) => {
   const imageLayerRef = useRef<Konva.Layer | null>(null);
   const regionLayerRef = useRef<Konva.Layer | null>(null);
 
-  const width = useStore((s) => s.width);
-  const height = useStore((s) => s.height);
-  const setSize = useStore((s) => s.setSize); 
-  const isDrawing = useStore((s) => s.isDrawing);
-  const toggleDrawing = useStore((s) => s.toggleIsDrawing);
-  const regions = useStore((s) => s.regions);
-  const setRegions = useStore((s) => s.setRegions);
-  const selectRegion = useStore((s) => s.selectRegion);
+  const width = useCanvasStore((s) => s.width);
+  const height = useCanvasStore((s) => s.height);
+  const setSize = useCanvasStore((s) => s.setSize); 
+  const isDrawing = useCanvasStore((s) => s.isDrawing);
+  const toggleDrawing = useCanvasStore((s) => s.toggleIsDrawing);
+  const regions = useCanvasStore((s) => s.regions);
+  const setRegions = useCanvasStore((s) => s.setRegions);
+  const selectRegion = useCanvasStore((s) => s.selectRegion);
 
   // --- Fix: keep refs to always-latest state for event handlers ---
   const regionsRef = useRef(regions); 
@@ -100,7 +100,7 @@ const Canvas = ({ stageRef }: CanvasProps) => {
     stage.add(imageLayer);
     stage.add(regionLayer);
 
-    //click and wheel
+    //click and wheel 
     stage.on("click", (e) => {
       if (e.target.name() !== "region") {
         selectRegion(null);

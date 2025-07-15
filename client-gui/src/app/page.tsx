@@ -16,7 +16,7 @@ export default function Home() {
 
   // startup setting to get the right url
   useEffect(() => {
-    // Try possible backend URLs at startup
+    // Try possible backend URLs at startup 
     const urls = [
 
       //after construction, need to register this to a stable deployer;  
@@ -25,7 +25,7 @@ export default function Home() {
       "http://localhost:8000", //local 
     ];
     (async () => {
-      for (const url of urls) {
+      for (const url of urls) { 
         try {
           const res = await fetch(url + "/");
           if (res.ok) {

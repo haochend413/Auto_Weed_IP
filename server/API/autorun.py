@@ -148,6 +148,8 @@ def runCombined(request: CombinedRequest = Body(...)):
     if allfalse:
         return
 
+    result = {}
+
     base_dir = Path(__file__).parent.parent
     raw_upload_dir = base_dir / "raw_upload"
     processed_dir = base_dir / "processed"
@@ -159,6 +161,7 @@ def runCombined(request: CombinedRequest = Body(...)):
     # Only run models that are enabled in ops
     res_dec = res_seg = res_cls = None
     res_dec_map = res_seg_map = res_cls_map = {}
+
     if ops[0]:
         res_dec = models["detect"](
             source=src, save=False, show_conf=False, project=processed_dir
@@ -177,23 +180,24 @@ def runCombined(request: CombinedRequest = Body(...)):
 
     # read and get all images
     image_paths = glob.glob(str(src) + "/*.jpg")
+    # Sort by time;
+    image_paths = sorted(image_paths, key=lambda x: os.path.getmtime(x), reverse=True)
     if TopOnly:
-        # Get latest image
-        image_paths = sorted(
-            image_paths, key=lambda x: os.path.getmtime(x), reverse=True
-        )
         image_paths = image_paths[:1]
-
     for img_path in image_paths:
         img_name = Path(img_path).name
         img = cv2.imread(img_path)
 
-        # Draw detection boxes
+        # Initialize result entry for this image
+        result[img_name] = {}
+
+        # Draw detection boxes and store
         if ops[0] and img_name in res_dec_map:
             res_dec_r = res_dec_map[img_name]
             boxes = res_dec_r.boxes
             for box in boxes:
                 xyxy = box.xyxy[0].cpu().numpy().astype(int)
+                result[img_name]["detect"] = xyxy.tolist()
                 cv2.rectangle(
                     img, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (255, 0, 0), 2
                 )
@@ -207,15 +211,30 @@ def runCombined(request: CombinedRequest = Body(...)):
                     2,
                 )
 
-        # Draw segmentation masks
+        # Draw segmentation masks and store
         if ops[1] and img_name in res_seg_map:
             res_seg_r = res_seg_map[img_name]
             masks = res_seg_r.masks
+
             if masks is not None:
                 masks_data = masks.data.cpu().numpy()
-                seg_boxes = res_seg_r.boxes
+                result[img_name]["segment"] = []
                 for mask_idx in range(masks_data.shape[0]):
                     mask = masks_data[mask_idx] * 255
+
+                    # convert to serialized json data for frontend vector overlay
+                    contours, _ = cv2.findContours(
+                        (mask).astype("uint8"),
+                        cv2.RETR_EXTERNAL,
+                        cv2.CHAIN_APPROX_SIMPLE,
+                    )
+                    contours_serializable = []
+                    for cnt in contours:
+                        points = cnt.squeeze().tolist()
+                        contours_serializable.append(points)
+                    result[img_name]["segment"].append(contours_serializable)
+
+                    # draw directly on returned image
                     colored_mask = cv2.merge([mask.astype("uint8")] * 3)
                     color = np.random.randint(0, 255, size=3).tolist()
                     colored_mask = (colored_mask * (np.array(color) / 255)).astype(
@@ -227,10 +246,11 @@ def runCombined(request: CombinedRequest = Body(...)):
                         )
                     img = cv2.addWeighted(img, 1.0, colored_mask, 1, 0)
 
-        # Draw classification result
+        # Draw classification result and store
         if ops[2] and img_name in res_cls_map:
             res_cls_r = res_cls_map[img_name]
             probs = res_cls_r.probs
+            result[img_name]["classify"] = probs
             if probs is not None:
                 top1 = probs.top1
                 label = models["classify"].model.names[top1]
@@ -244,9 +264,8 @@ def runCombined(request: CombinedRequest = Body(...)):
                     2,
                 )
 
-        # Save the annotated image
+        # Save the annotated image to output
         cv2.imwrite(str(Path(processed_dir) / f"{img_name}.jpg"), img)
+        # use stored data to produce json contour
 
-        # It should return the data for the canvas component to render on screen.
-        # For direct auto usage, ignore the return value.
-        return
+        return result

@@ -19,35 +19,40 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
       ["segment", false],
       ["classify", false],
     ])
-  );
+  ); 
 
-  const HandleRun = async () => {
+  const HandleRun = async () => { 
     //detect, segment, classify
     const signal = [
         runOps.get("detect") || false, 
         runOps.get("segment") || false, 
         runOps.get("classify") || false
     ];
-    const response = await fetch(baseServerURL + "/model/combined", {
+    const response = await fetch(baseServerURL + "/model/combined", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      //APIs 
       body: JSON.stringify({ ops: signal , TopOnly: true})
     });
     
-    const result = await response.json();
+    const result = await response.json(); 
     console.log(result)
+    const firstImgName = Object.keys(result)[0];
+    const de = result[firstImgName]["segment"];
+    console.log(de)
+    console.log(de);
   }
 
   // Sync zustand state with local state
   useEffect(() => {
     setChecked(new Map([
-      ["detect", runOps.get("detect") || false],
-      ["segment", runOps.get("segment") || false],
-      ["classify", runOps.get("classify") || false],
+      ["detect", runOps.get("detect") || false], 
+      ["segment", runOps.get("segment") || false], 
+      ["classify", runOps.get("classify") || false], 
     ]));
   }, [runOps]);
 
-  const handleChange = (name: string) => (
+  const handleChange = (name: string) => ( 
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newChecked = new Map(checked);

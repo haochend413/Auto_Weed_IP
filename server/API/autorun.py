@@ -19,28 +19,10 @@ import cv2
 import glob
 import numpy as np
 from pydantic import BaseModel
+from model import models
 
 
 model_router = APIRouter()
-
-# load model at server startup
-models = {
-    "detect": YOLO(Path(__file__).parent.parent / "models" / "detection" / "best.pt"),
-    "segment": YOLO(Path(__file__).parent.parent / "models" / "segment" / "best.pt"),
-    "classify": YOLO(Path(__file__).parent.parent / "models" / "classify" / "best.pt"),
-}
-
-models["classify"].model.names = {
-    0: "ziziphus mauritiana",
-    1: "lantana camara",
-    2: "parkinsonia aculeata",
-    3: "parthenium hysterophorus",
-    4: "vachellia nilotica",
-    5: "cryptostegia grandiflora",
-    6: "chromolaena odorata",
-    7: "gutierrezia sarothrae",
-    8: "none",
-}
 
 
 @model_router.post("/auto/{operation}")

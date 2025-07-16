@@ -10,7 +10,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import useStore from "../../_store/canvas";
+import useCanvasStore from "../../_store/canvas";
 import type { Region } from "../../_store/canvas";
 
 
@@ -47,8 +47,8 @@ const RegionItem: React.FC<RegionItemProps> = ({ region, onRemove }) => {
 };
 
 const RegionList: React.FC = () => {
-  const regions = useStore((s) => s.regions);
-  const setRegions = useStore((s) => s.setRegions);
+  const regions = useCanvasStore((s) => s.regions);
+  const setRegions = useCanvasStore((s) => s.setRegions);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })

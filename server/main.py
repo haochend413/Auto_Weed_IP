@@ -1,13 +1,50 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-
+from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from API.autorun import model_router
+from ultralytics import YOLO
 from API.upload import gui_router
+import os
+import shutil
+
+# from model import models, load_models
+from pathlib import Path
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    import model
+
+    model.models = model.load_models()
+
+    base_dir = Path(__file__).parent
+    raw_upload_dir = base_dir / "raw_upload"
+    processed_dir = base_dir / "processed"
+    # Server Running
+    yield
+    # Clean up the ML models and release the resources
+    model.models.clear()
+    # clear up local storage
+    print("Cleaning up storage...")
+    print(f"Cleaning up {processed_dir} ...")
+
+    for item in processed_dir.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item, ignore_errors=True)
+        else:
+            item.unlink(missing_ok=True)
+    print(f"Cleaning up {raw_upload_dir} ...")
+    for item in raw_upload_dir.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item, ignore_errors=True)
+        else:
+            item.unlink(missing_ok=True)
+
+
 # mount for common access
+app = FastAPI(lifespan=lifespan)
 app.mount("/raw_upload", StaticFiles(directory="raw_upload"), name="raw_upload")
 app.include_router(model_router, prefix="/model")
 app.include_router(gui_router, prefix="/gui")

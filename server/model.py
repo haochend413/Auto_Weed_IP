@@ -28,6 +28,13 @@ def load_models():
     return models
 
 
+def get_models():
+    global models
+    if models is None:
+        models = load_models()
+    return models
+
+
 # Declare models variable but don't load yet
 # It will be initialized in main.py during startup
 models = None

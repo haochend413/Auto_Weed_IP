@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     base_dir = Path(__file__).parent
     raw_upload_dir = base_dir / "raw_upload"
     processed_dir = base_dir / "processed"
+    # print(model.models)
     # Server Running
     yield
     # Clean up the ML models and release the resources

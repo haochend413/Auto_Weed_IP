@@ -44,9 +44,9 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     const firstImgName = Object.keys(result)[0];
     const seg = result[firstImgName]["segment"];
   
-      //create new region
-      console.log(seg[0])
-      
+    // console.log(seg[0])
+    //create new region
+
     for (const [idx, r] of seg.entries()) {
       for (const contour of r) { 
         const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));

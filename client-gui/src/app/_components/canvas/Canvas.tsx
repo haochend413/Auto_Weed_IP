@@ -1,46 +1,38 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Konva from "konva";
 import useCanvasStore from "../../_store/canvas";
 import BaseImage from "./BaseImage";
+import { getRelativePointerPosition, zoomLayer, zoomStage } from './utils';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 let id = 1;
 
-//draw with pointer
-function getRelativePointerPosition(node: Konva.Stage) {
-  const transform = node.getAbsoluteTransform().copy();
-  transform.invert();
-  const pos = node.getPointerPosition();
-  return pos ? transform.point(pos) : { x: 0, y: 0 };
-}
-
-//on pinch zoom function
-function zoomStage(stage: Konva.Stage, scaleBy: number) {
-  const oldScale = stage.scaleX(); 
-  const mousePointTo = { 
-    x: stage.width() / 2 / oldScale - stage.x() / oldScale,
-    y: stage.height() / 2 / oldScale - stage.y() / oldScale,
-  };
-  const newScale = Math.max(0.05, oldScale * scaleBy);
-  const newPos = {
-    x: -(mousePointTo.x - stage.width() / 2 / newScale) * newScale,
-    y: -(mousePointTo.y - stage.height() / 2 / newScale) * newScale,
-  };
-  stage.scale({ x: newScale, y: newScale });
-  stage.position(newPos);
-  stage.batchDraw();
-}
 
 interface CanvasProps {
   stageRef?: React.RefObject<Konva.Stage | null>;
+  imageLayerRef: React.RefObject<Konva.Layer | null>;
+  regionLayerRef: React.RefObject<Konva.Layer | null>;
+  focusName: string;
+  setFocusName: (name: string) => void;
+  focusLayer: Konva.Layer | null; 
+  setFocusLayer: (layer: Konva.Layer) => void
 }
 
-const Canvas = ({ stageRef }: CanvasProps) => {
+const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusName, focusLayer, setFocusLayer}: CanvasProps) => {
   //used for rendering the Konva elements
   const containerRef = useRef<HTMLDivElement>(null);
+  // Add state to store and display stage position (tmp)
+  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0, scale: 1 });
+  const [imagelyerpos, setimgpos] = useState({ x: 0, y: 0, scale: 1 });
+  const [regionslyerpos, setregpos] = useState({ x: 0, y: 0, scale: 1 });
+  //we use this to manage the focused layer; 
+  
 
-  const imageLayerRef = useRef<Konva.Layer | null>(null);
-  const regionLayerRef = useRef<Konva.Layer | null>(null);
 
   const width = useCanvasStore((s) => s.width);
   const height = useCanvasStore((s) => s.height);
@@ -51,11 +43,19 @@ const Canvas = ({ stageRef }: CanvasProps) => {
   const setRegions = useCanvasStore((s) => s.setRegions);
   const selectRegion = useCanvasStore((s) => s.selectRegion);
 
-  // --- Fix: keep refs to always-latest state for event handlers ---
   const regionsRef = useRef(regions); 
   const isDrawingRef = useRef(isDrawing);
+
+    //actions: drag
+    let spacePressed = false;
+
+
+  
+
+  // update for other component's update on regions; 
   useEffect(() => { regionsRef.current = regions; }, [regions]);
   useEffect(() => { isDrawingRef.current = isDrawing; }, [isDrawing]);
+
 
 
   // Initialize stage and layers only once on mount
@@ -69,55 +69,90 @@ const Canvas = ({ stageRef }: CanvasProps) => {
       width,
       height,
     }); 
-    // localStageRef.current = stage;
+
+    // stageRef set; 
     if (stageRef) {
       stageRef.current = stage;
     }
-
-    let spacePressed = false;
-
-    window.addEventListener("keydown", (e) => {
-      if (e.code === "Space") {
-        spacePressed = true;
-        stage.draggable(true);
-        stage.container().style.cursor = "grab";
-      }
-    });
-
-    window.addEventListener("keyup", (e) => {
-      if (e.code === "Space") {
-        spacePressed = false;
-        stage.draggable(false);
-        stage.container().style.cursor = "default";
-      }
-    });
-
+     //initialize layers; 
     const imageLayer = new Konva.Layer();
     imageLayerRef.current = imageLayer;
-    const regionLayer = new Konva.Layer();
+    const regionLayer = new Konva.Layer(
+      {
+        width: width,
+        height: height, 
+      }
+
+    );
     regionLayerRef.current = regionLayer;
+    const background = new Konva.Rect({
+      x: 0,
+      y: 0,
+      width: stage.width(),
+      height: stage.height(),
+      fill: 'transparent',
+      listening: true
+    });
+    regionLayer.add(background);
 
     stage.add(imageLayer);
     stage.add(regionLayer);
 
-    //click and wheel 
-    stage.on("click", (e) => {
+    // Initialize the focus layer based on the initial focusName
+    if (focusName === 'region') {
+      setFocusLayer(regionLayer);
+      regionLayer.listening(true);
+      imageLayer.listening(false);
+    } else if (focusName === 'base image') {
+      setFocusLayer(imageLayer);
+      imageLayer.listening(true);
+      regionLayer.listening(false);
+    }
+
+
+
+    
+    // Function to update the stage position state
+    const updateStagePosition = (stage: Konva.Stage) => {
+      setStagePosition({
+        x: stage.x(),
+        y: stage.y(),
+        scale: stage.scaleX()
+      });
+    };
+        // Function to update the stage position state
+    const updateimgpos = (layer: Konva.Layer) => {
+      setimgpos({
+        x: layer.x(),
+        y: layer.y(),
+        scale: layer.scaleX()
+      });
+    };
+        // Function to update the stage position state
+    const updaterespos = (layer: Konva.Layer) => {
+      setregpos({
+        x: layer.x(),
+        y: layer.y(),
+        scale: layer.scaleX()
+      });
+    };
+
+
+
+    regionLayer.on("click", (e) => {
       if (e.target.name() !== "region") {
         selectRegion(null);
       }
     });
 
-    stage.on("wheel", (e) => {
-      e.evt.preventDefault();
-      const scaleBy = e.evt.deltaY > 0 ? 0.9 : 1.1;
-      zoomStage(stage, scaleBy);
-    });
+
+    //modify this to be drawing on layer; 
 
 
-    stage.on("mousedown", () => {
+    regionLayer.on("mousedown", () => { 
       if (!spacePressed) {
               toggleDrawing();
-      const point = getRelativePointerPosition(stage);
+      const point = getRelativePointerPosition(stage, regionLayer);
       const region = {
         id: id++,
         color: Konva.Util.getRandomColor(),
@@ -126,12 +161,12 @@ const Canvas = ({ stageRef }: CanvasProps) => {
       setRegions([...regionsRef.current, region]);
       }
 
-    });
-
-    stage.on("mousemove", () => {
+    }); 
+ 
+    regionLayer.on("mousemove", () => {
       if (!spacePressed) {
               if (!isDrawingRef.current) return;
-      const point = getRelativePointerPosition(stage);
+      const point = getRelativePointerPosition(stage, regionLayer);
       const prevRegions = regionsRef.current;
       if (!prevRegions.length) return;
       const lastRegion = { ...prevRegions[prevRegions.length - 1] };
@@ -142,7 +177,7 @@ const Canvas = ({ stageRef }: CanvasProps) => {
 
     });
 
-    stage.on("mouseup", () => {
+    regionLayer.on("mouseup", () => {
             if (!spacePressed) {
               if (!isDrawingRef.current) return;
       const prevRegions = regionsRef.current;
@@ -172,7 +207,37 @@ const Canvas = ({ stageRef }: CanvasProps) => {
       window.removeEventListener("resize", resize);
       stage.destroy();
     };
-  }, []); // Run once on mount
+  }, []); // Run once on mount 
+
+
+  useEffect(() => {
+    if (focusLayer) {
+          focusLayer.on("wheel", (e) => {
+      e.evt.preventDefault();
+      const scaleBy = e.evt.deltaY > 0 ? 0.9 : 1.1;
+      zoomLayer(focusLayer, scaleBy);
+
+    });
+    }
+
+        // let shiftPressed = false; 
+      window.addEventListener("keydown", (e) => {
+        if (e.code === "Space") { 
+          spacePressed = true;
+          if (focusLayer) {
+            focusLayer.draggable(true)
+          }
+          console.log(focusLayer)
+        } 
+      });
+
+      window.addEventListener("keyup", (e) => {
+        if (e.code === "Space") {
+          spacePressed = false; 
+          focusLayer?.draggable(false)
+        }
+      });
+  }, [focusLayer])
 
   // Redraw regions whenever `regions` changes
   useEffect(() => {
@@ -199,10 +264,29 @@ const Canvas = ({ stageRef }: CanvasProps) => {
 
   return ( 
     <div style={{ position: "relative" }}>
+      {/* Stage position display */}
+      <div style={{ 
+        position: "absolute", 
+        top: 10, 
+        right: 10,  
+        background: "rgba(0,0,0,0.5)", 
+        color: "white",
+        padding: "5px",
+        borderRadius: "3px",
+        fontSize: "12px",
+        zIndex: 1000
+      }}>
+        Position: ({Math.round(stagePosition.x)}, {Math.round(stagePosition.y)}) | Scale: {stagePosition.scale.toFixed(2)}
+        Position: ({Math.round(imagelyerpos.x)}, {Math.round(imagelyerpos.y)}) | Scale: {imagelyerpos.scale.toFixed(2)}
+        Position: ({Math.round(regionslyerpos.x)}, {Math.round(regionslyerpos.y)}) | Scale: {regionslyerpos.scale.toFixed(2)}
+      </div>
+      
+
       <div
         ref={containerRef}
         style={{
-          width: width,
+          border: "1px solid black", 
+          width: "100%",
           height: height, 
           position: "relative" 
         }}

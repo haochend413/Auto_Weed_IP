@@ -166,6 +166,7 @@ return (
     {/* Canvas Column */}
     <div style={{
       flex: 1,
+      
       minWidth: 0,
       background: "#f0f4ff",
       padding: 0,

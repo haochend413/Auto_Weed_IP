@@ -4,11 +4,6 @@ import Konva from "konva";
 import useCanvasStore from "../../_store/canvas";
 import BaseImage from "./BaseImage";
 import { getRelativePointerPosition, zoomLayer, zoomStage } from './utils';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 let id = 1;
 
@@ -209,7 +204,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusNa
     };
   }, []); // Run once on mount 
 
-
+  //actions that depends on focusLayer; 
   useEffect(() => {
     if (focusLayer) {
           focusLayer.on("wheel", (e) => {

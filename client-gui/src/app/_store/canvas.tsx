@@ -54,7 +54,7 @@ const useCanvasStore = create<StoreState>(set => ({
     toggleIsDrawing: () => set(state => ({ isDrawing: !state.isDrawing })),
 
     regions: [],
-    setRegions: (regions: Region[]) => set(state => ({ regions })),
+    setRegions: (regions: Region[]) => set(state => ({ regions })), 
 
     selectedRigionId: null,
     selectRegion: (selectedRigionId: string | number | null) => set({ selectedRigionId }),

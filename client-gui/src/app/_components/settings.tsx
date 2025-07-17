@@ -40,24 +40,45 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     });
     
     const result = await response.json(); 
-    console.log(result)
+    // console.log(result)
     const firstImgName = Object.keys(result)[0];
     const seg = result[firstImgName]["segment"];
   
-    // console.log(seg[0])
-    //create new region
+    // console.log(seg)
+ 
+  const newRegions: Region[] = [];
+  
+  let level = 0;
+  let count = 0;
 
-    for (const [idx, r] of seg.entries()) {
-      for (const contour of r) { 
+  for (const [idx, r] of seg.entries()) {
+    level += 1;
+    for (const contour of r) { 
+      count += 1;
+      console.log("contour", contour);
+      
+      if (Array.isArray(contour)) {
         const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));
         const newRegion: Region = {
-          id: `region-${idx}`,
+          id: `region-${level}-${count}`,
           points: newPoints,
           color: "#ff0000" 
         };
-        setRegions([...regions, newRegion]);
+        console.log("new region", newRegion);
+        
+        // Add to our collection instead of updating state
+        newRegions.push(newRegion);
+      } else {
+        console.warn(`Skipping non-array contour: ${contour}`);
       }
     }
+  }
+  
+  // Now update state once with all the new regions
+  if (newRegions.length > 0) {
+    console.log(`Adding ${newRegions.length} new regions`);
+    setRegions([...regions, ...newRegions]);
+  }
    
       // console.log(regions)
   }

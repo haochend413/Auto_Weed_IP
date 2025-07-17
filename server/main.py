@@ -25,7 +25,6 @@ async def lifespan(app: FastAPI):
     # print(model.models)
     # Server Running
     yield
-    # Clean up the ML models and release the resources
     model.models.clear()
     # clear up local storage
     print("Cleaning up storage...")

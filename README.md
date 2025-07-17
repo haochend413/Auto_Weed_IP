@@ -4,6 +4,8 @@
 
 Automatic weed classification & segmentation powered by YOLO. 
 
+![DEMO](assets/intro.gif)
+
 ## Requirements
 
 python 3.13 (maybe), go 1.24.4

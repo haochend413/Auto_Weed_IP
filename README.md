@@ -4,7 +4,7 @@
 
 Automatic weed classification & segmentation powered by YOLO. 
 
-![DEMO](assets/intro.gif)
+![DEMO](assets/Kapture%202025-07-17%20at%2017.45.11.gif)
 
 ## Requirements
 

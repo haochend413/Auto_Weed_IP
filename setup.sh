@@ -12,7 +12,7 @@ deactivate
 cd ..
 
 echo "Setting up Go frontend environment"
-cd frontend
+cd client-cli
 # Download Go modules
 go mod tidy
 

@@ -170,11 +170,13 @@ def runCombined(request: CombinedRequest = Body(...)):
         res_dec = models["detect"](
             source=src, save=False, show_conf=False, project=processed_dir
         )
+
         res_dec_map = {Path(r.path).name: r for r in res_dec}
     if ops[1]:
         res_seg = models["segment"](
             source=src, save=False, show_conf=False, project=processed_dir
         )
+
         res_seg_map = {Path(r.path).name: r for r in res_seg}
     if ops[2]:
         res_cls = models["classify"](
@@ -191,6 +193,7 @@ def runCombined(request: CombinedRequest = Body(...)):
     for img_path in image_paths:
         img_name = Path(img_path).name
         img = cv2.imread(img_path)
+        height, width = img.shape[:2]
 
         # Initialize result entry for this image
         result[img_name] = {}
@@ -199,6 +202,8 @@ def runCombined(request: CombinedRequest = Body(...)):
         if ops[0] and img_name in res_dec_map:
             res_dec_r = res_dec_map[img_name]
             boxes = res_dec_r.boxes
+            print(res_dec_r.to_json())
+            print(res_dec_r.to_html())
             result[img_name]["detect"] = []
             for box in boxes:
                 xyxy = box.xyxy[0].cpu().numpy().astype(int)
@@ -220,7 +225,7 @@ def runCombined(request: CombinedRequest = Body(...)):
         if ops[1] and img_name in res_seg_map:
             res_seg_r = res_seg_map[img_name]
             masks = res_seg_r.masks
-
+            # print(res_seg_r.to_json())
             if masks is not None:
                 masks_data = masks.data.cpu().numpy()
                 result[img_name]["segment"] = []

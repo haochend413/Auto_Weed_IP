@@ -28,6 +28,9 @@ const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
         x: 0,      // place image 100px from left of parent
         y: 0,      // place image 150px from top of parent 
     });
+    
+    console.log(imageObj.width)
+    console.log(imageObj.height)
   
 
     //fit in

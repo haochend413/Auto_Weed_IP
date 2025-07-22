@@ -18,7 +18,6 @@ import glob
 import numpy as np
 
 # only handle upload; two routers right now;
-
 gui_router = APIRouter()
 
 

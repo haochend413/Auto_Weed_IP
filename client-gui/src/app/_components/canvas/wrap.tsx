@@ -104,7 +104,7 @@ const Wrap =  () => {
         borderRadius: "5px"
       }}>
         <div style={{ marginBottom: "8px", color: "white", fontSize: "14px", fontWeight: "bold" }}>
-          Active Layer
+          Layers
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <button 
@@ -124,7 +124,7 @@ const Wrap =  () => {
               switchFocus('region');
             }}
           >
-            Region Layer
+            Segmentations
           </button>
           
           <button 

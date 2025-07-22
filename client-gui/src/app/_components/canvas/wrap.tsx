@@ -35,36 +35,22 @@ const Wrap =  () => {
   const[focusName, setFocusName] = useState<string>('region')
   const imageLayerRef = useRef<Konva.Layer | null>(null);
   const regionLayerRef = useRef<Konva.Layer | null>(null); 
+  const borderLayerRef = useRef<Konva.Layer | null>(null); 
   const [focusLayer, setFocusLayer] = useState<Konva.Layer | null>(null)
-    //helpers
-    const switchFocus = (name: string) => {
-   
-      setFocusName(name); // Update the focusName state
-      console.log("Switching focus to:", name);
-      
-      switch (name) {
-        case 'region':
-          if (!regionLayerRef.current) {
-            return;
-          } 
-          regionLayerRef.current.listening(true);
-          if (imageLayerRef.current) {
-            imageLayerRef.current.listening(false);
-          }
-          setFocusLayer(regionLayerRef.current);
-          break;
-        case 'base image':
-          if (!imageLayerRef.current) {
-            return;
-          } 
-          imageLayerRef.current.listening(true);
-          if (regionLayerRef.current) {
-            regionLayerRef.current.listening(false);
-          }
-          setFocusLayer(imageLayerRef.current);
-          break;
-      }
-    }
+  const layerRefs: Record<string, React.RefObject<Konva.Layer | null>> = {
+    "region": regionLayerRef,
+    "base image": imageLayerRef,
+    "border": borderLayerRef,
+  };
+  
+  const switchFocus = (name: string) => {
+    setFocusName(name);
+    Object.entries(layerRefs).forEach(([key, ref]) => {
+      ref.current?.listening(key === name);
+    });
+    setFocusLayer(layerRefs[name]?.current ?? null);
+  };
+
   return (
     <div className="App" style={{
       display: 'flex',
@@ -156,15 +142,35 @@ const Wrap =  () => {
             onClick={() => {
               // const fakeEvent = { target: { value: 'base image' } } as SelectChangeEvent;
               switchFocus('base image');
-              console.log(focusLayer)
+        
             }} 
           >
             Base Image
           </button>
+          <button 
+            style={{
+              background: focusName === 'border' ? '#1976d2' : 'rgba(255,255,255,0.15)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '8px 12px',
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontWeight: focusName === 'border' ? 'bold' : 'normal',
+              transition: 'background 0.2s'
+            }}
+            onClick={() => {
+              // const fakeEvent = { target: { value: 'base image' } } as SelectChangeEvent;
+              switchFocus('border');
+        
+            }} 
+          >
+            Detections
+          </button>
         </div>
       </div>
 
-    <Canvas stageRef={stageRef} focusLayer={focusLayer} setFocusLayer={setFocusLayer} imageLayerRef={imageLayerRef} regionLayerRef={regionLayerRef} focusName={focusName} setFocusName={setFocusName}/>
+    <Canvas stageRef={stageRef} focusLayer={focusLayer} setFocusLayer={setFocusLayer} imageLayerRef={imageLayerRef} regionLayerRef={regionLayerRef} focusName={focusName} setFocusName={setFocusName} borderLayerRef={borderLayerRef}/>
     <button
       style={{
         position: "absolute",

@@ -199,9 +199,10 @@ def runCombined(request: CombinedRequest = Body(...)):
         if ops[0] and img_name in res_dec_map:
             res_dec_r = res_dec_map[img_name]
             boxes = res_dec_r.boxes
+            result[img_name]["detect"] = []
             for box in boxes:
                 xyxy = box.xyxy[0].cpu().numpy().astype(int)
-                result[img_name]["detect"] = xyxy.tolist()
+                result[img_name]["detect"].append(xyxy.tolist())
                 cv2.rectangle(
                     img, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (255, 0, 0), 2
                 )

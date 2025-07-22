@@ -32,6 +32,7 @@ const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
 
     //fit in
       const scale = Math.min(width / imageObj.width, height / imageObj.height);
+      console.log(scale)
       setScale(scale);
       setImageSize({ width: imageObj.width, height: imageObj.height });
       konvaImage.scale({ x: scale, y: scale });

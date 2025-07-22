@@ -13,6 +13,15 @@ export interface Region {
     // Add more properties as needed
 }
 
+export interface Border {
+    id: string | number;
+    x: number;
+    y: number; 
+    height: number;
+    width: number;
+    color: string; 
+}
+
 interface StoreState {
     width: number;
     height: number;
@@ -30,6 +39,8 @@ interface StoreState {
 
     regions: Region[];
     setRegions: (regions: Region[]) => void; 
+    borders: Border[]; 
+    setBorders: (borders: Border[]) => void; 
 
     selectedRigionId: string | number | null;
     selectRegion: (selectedRigionId: string | number | null) => void;
@@ -55,6 +66,8 @@ const useCanvasStore = create<StoreState>(set => ({
 
     regions: [],
     setRegions: (regions: Region[]) => set(state => ({ regions })), 
+    borders: [],
+    setBorders: (borders: Border[]) => set(state => ({ borders })), 
 
     selectedRigionId: null,
     selectRegion: (selectedRigionId: string | number | null) => set({ selectedRigionId }),

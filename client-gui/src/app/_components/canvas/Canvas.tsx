@@ -7,18 +7,20 @@ import { getRelativePointerPosition, zoomLayer, zoomStage } from './utils';
 
 let id = 1;
 
+const SCALE = 0.175; 
 
 interface CanvasProps {
   stageRef?: React.RefObject<Konva.Stage | null>;
   imageLayerRef: React.RefObject<Konva.Layer | null>;
   regionLayerRef: React.RefObject<Konva.Layer | null>;
+  borderLayerRef: React.RefObject<Konva.Layer | null>;
   focusName: string;
   setFocusName: (name: string) => void;
   focusLayer: Konva.Layer | null; 
-  setFocusLayer: (layer: Konva.Layer) => void
+  setFocusLayer: (layer: Konva.Layer) => void 
 }
 
-const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusName, focusLayer, setFocusLayer}: CanvasProps) => {
+const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focusName, setFocusName, focusLayer, setFocusLayer}: CanvasProps) => {
   //used for rendering the Konva elements
   const containerRef = useRef<HTMLDivElement>(null);
   // Add state to store and display stage position (tmp)
@@ -34,12 +36,18 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusNa
   const setSize = useCanvasStore((s) => s.setSize); 
   const isDrawing = useCanvasStore((s) => s.isDrawing);
   const toggleDrawing = useCanvasStore((s) => s.toggleIsDrawing);
+
   const regions = useCanvasStore((s) => s.regions);
   const setRegions = useCanvasStore((s) => s.setRegions);
   const selectRegion = useCanvasStore((s) => s.selectRegion);
 
+  const borders = useCanvasStore((s) => s.borders);
+  const setBorders = useCanvasStore((s) => s.setBorders);
+
   const regionsRef = useRef(regions); 
   const isDrawingRef = useRef(isDrawing);
+  const borderRef = useRef(borders); 
+
 
     //actions: drag
     let spacePressed = false;
@@ -50,6 +58,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusNa
   // update for other component's update on regions; 
   useEffect(() => { regionsRef.current = regions; }, [regions]);
   useEffect(() => { isDrawingRef.current = isDrawing; }, [isDrawing]);
+  useEffect(() => { borderRef.current = borders; }, [borders]);
 
 
 
@@ -77,9 +86,15 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusNa
         width: width,
         height: height, 
       }
-
     );
     regionLayerRef.current = regionLayer;
+    const borderLayer = new Konva.Layer(
+      {
+        width: width,
+        height: height, 
+      }
+    );
+    borderLayerRef.current = borderLayer;
     const background = new Konva.Rect({
       x: 0,
       y: 0,
@@ -92,45 +107,18 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusNa
 
     stage.add(imageLayer);
     stage.add(regionLayer);
+    stage.add(borderLayer); 
 
-    // Initialize the focus layer based on the initial focusName
-    if (focusName === 'region') {
-      setFocusLayer(regionLayer);
-      regionLayer.listening(true);
-      imageLayer.listening(false);
-    } else if (focusName === 'base image') {
-      setFocusLayer(imageLayer);
-      imageLayer.listening(true);
-      regionLayer.listening(false);
-    }
-
-
-
-    
-    // Function to update the stage position state
-    const updateStagePosition = (stage: Konva.Stage) => {
-      setStagePosition({
-        x: stage.x(),
-        y: stage.y(),
-        scale: stage.scaleX()
-      });
+    const layerMap: Record<string, Konva.Layer> = {
+      "region": regionLayer,
+      "base image": imageLayer,
+      "border": borderLayer,
     };
-        // Function to update the stage position state
-    const updateimgpos = (layer: Konva.Layer) => {
-      setimgpos({
-        x: layer.x(),
-        y: layer.y(),
-        scale: layer.scaleX()
-      });
-    };
-        // Function to update the stage position state
-    const updaterespos = (layer: Konva.Layer) => {
-      setregpos({
-        x: layer.x(),
-        y: layer.y(),
-        scale: layer.scaleX()
-      });
-    };
+
+    Object.entries(layerMap).forEach(([key, layer]) => {
+      layer.listening(key === focusName);
+    });
+    setFocusLayer(layerMap[focusName]);
 
 
 
@@ -242,7 +230,8 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusNa
     // Clear old regions
     regionLayer.find(".region").forEach((node) => node.destroy());
 
-    regions.forEach((region) => {
+    regions.forEach((region) => { 
+      console.log(region)
       const line = new Konva.Line({
         points: region.points.flatMap((p) => [p.x, p.y]),
         stroke: region.color,
@@ -257,26 +246,43 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, focusName, setFocusNa
     regionLayer.batchDraw();
   }, [regions]);
 
+
+    // Redraw regions whenever `regions` changes
+  useEffect(() => {
+    const borderLayer = borderLayerRef.current;
+    if (!borderLayer) return;
+
+    // Clear old regions
+    borderLayer.find(".border").forEach((node) => node.destroy());
+
+    borders.forEach((border) => { 
+      console.log(border);
+      const rect = new Konva.Rect({
+        // points: region.points.flatMap((p) => [p.x, p.y]),
+        stroke: border.color,
+        strokeWidth: 2,
+        // closed: true,
+        // fill: border.color + "33",
+        x: border.x * SCALE,
+        y: border.y * SCALE, 
+        width: border.width * SCALE, 
+        height: border.height * SCALE, 
+        name: "border",
+      });
+      borderLayer.add(rect);
+    });
+
+    borderLayer.batchDraw();
+  }, [borders]);
+
+
+
+
+
+
   return ( 
     <div style={{ position: "relative" }}>
       {/* Stage position display */}
-      <div style={{ 
-        position: "absolute", 
-        top: 10, 
-        right: 10,  
-        background: "rgba(0,0,0,0.5)", 
-        color: "white",
-        padding: "5px",
-        borderRadius: "3px",
-        fontSize: "12px",
-        zIndex: 1000
-      }}>
-        Position: ({Math.round(stagePosition.x)}, {Math.round(stagePosition.y)}) | Scale: {stagePosition.scale.toFixed(2)}
-        Position: ({Math.round(imagelyerpos.x)}, {Math.round(imagelyerpos.y)}) | Scale: {imagelyerpos.scale.toFixed(2)}
-        Position: ({Math.round(regionslyerpos.x)}, {Math.round(regionslyerpos.y)}) | Scale: {regionslyerpos.scale.toFixed(2)}
-      </div>
-      
-
       <div
         ref={containerRef}
         style={{

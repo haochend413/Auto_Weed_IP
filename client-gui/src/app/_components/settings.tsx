@@ -4,7 +4,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 import useModelStore from '../_store/model';
 import useServerStore from '../_store/server';
-import useCanvasStore, {Region} from '../_store/canvas';
+import useCanvasStore, {Region, Border} from '../_store/canvas';
 
 import "./style.css"
 
@@ -13,8 +13,12 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   const runOps = useModelStore((s) => s.runOps);
   const setRunOps = useModelStore((s) => s.setRunOps);
   const baseServerURL = useServerStore((s) => s.baseServerURL)
+  //regions
   const regions = useCanvasStore((s) => s.regions)
   const setRegions = useCanvasStore((s) => s.setRegions)
+  //borders
+  const borders = useCanvasStore((s) => s.borders)
+  const setBorders = useCanvasStore((s) => s.setBorders) 
 
   // Local state for checkboxes as a Map
   const [checked, setChecked] = useState<Map<string, boolean>>(
@@ -22,8 +26,8 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
       ["detect", false],
       ["segment", false],
       ["classify", false],
-    ])
-  ); 
+      ])
+    ); 
 
   const HandleRun = async () => { 
     //detect, segment, classify
@@ -42,45 +46,81 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     const result = await response.json(); 
     // console.log(result)
     const firstImgName = Object.keys(result)[0];
+    //now there is only segment 
     const seg = result[firstImgName]["segment"];
-  
-    // console.log(seg)
- 
-  const newRegions: Region[] = [];
-  
-  let level = 0;
-  let count = 0;
+    const det = result[firstImgName]["detect"]; 
+    // console.log(det)
 
-  for (const [idx, r] of seg.entries()) {
-    level += 1;
-    for (const contour of r) { 
-      count += 1;
-      console.log("contour", contour);
-      
-      if (Array.isArray(contour)) {
-        const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));
-        const newRegion: Region = {
-          id: `region-${level}-${count}`,
-          points: newPoints,
-          color: "#ff0000" 
-        };
-        console.log("new region", newRegion);
+    // console.log(seg) 
+  
+    const newRegions: Region[] = [];
+    
+    let level = 0;
+    let count = 0;
+ 
+    for (const [idx, r] of seg.entries()) {
+      level += 1;
+      for (const contour of r) { 
+        count += 1;
+        // console.log("contour", contour);
         
-        // Add to our collection instead of updating state
-        newRegions.push(newRegion);
-      } else {
-        console.warn(`Skipping non-array contour: ${contour}`);
+        if (Array.isArray(contour)) {
+          const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));
+          const newRegion: Region = {
+            id: `region-${level}-${count}`,
+            points: newPoints,
+            color: "#ff0000" 
+          };
+          // console.log("new region", newRegion);
+          
+          // Add to our collection instead of updating state
+          newRegions.push(newRegion);
+        } else {
+          // console.warn(`Skipping non-array contour: ${contour}`);
+        }
       }
     }
-  }
-  
-  // Now update state once with all the new regions
-  if (newRegions.length > 0) {
-    console.log(`Adding ${newRegions.length} new regions`);
-    setRegions([...regions, ...newRegions]);
-  }
-   
-      // console.log(regions)
+    
+    // Now update state once with all the new regions
+    if (newRegions.length > 0) {
+      console.log(`Adding ${newRegions.length} new regions`);
+      setRegions([...regions, ...newRegions]);
+    }
+
+    const newBorders: Border[] = []; 
+
+    let l = 0;
+    // let c = 0;
+ 
+    for (const [idx, box] of det.entries()) {
+      // console.log(b)
+      l += 1;
+      // for (const box of b) { 
+        // c += 1;
+        // console.log("contour", contour);
+        
+        if (Array.isArray(box)) {
+          
+          const newBorder: Border = {
+            id: `border-${l}`,
+            x: box[0],
+            y: box[1], 
+            width: box[2] - box[0], 
+            height: box[3] - box[1], 
+            color: "#1900ffff" 
+          };
+          // console.log("new region", newRegion);
+          
+          // Add to our collection instead of updating state
+          newBorders.push(newBorder);
+      }
+    }
+    
+    // Now update state once with all the new regions
+    if (newBorders.length > 0) {
+      console.log(`Adding ${newBorders.length} new borders`);
+      setBorders([...borders, ...newBorders]);
+    }
   }
 
   // Sync zustand state with local state

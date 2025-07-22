@@ -15,7 +15,7 @@ interface CanvasProps {
   regionLayerRef: React.RefObject<Konva.Layer | null>;
   borderLayerRef: React.RefObject<Konva.Layer | null>;
   focusName: string;
-  setFocusName: (name: string) => void;
+  setFocusName: (name: string) => void; 
   focusLayer: Konva.Layer | null; 
   setFocusLayer: (layer: Konva.Layer) => void 
 }
@@ -231,7 +231,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     regionLayer.find(".region").forEach((node) => node.destroy());
 
     regions.forEach((region) => { 
-      console.log(region)
+      // console.log(region)
       const line = new Konva.Line({
         points: region.points.flatMap((p) => [p.x, p.y]),
         stroke: region.color,
@@ -256,7 +256,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     borderLayer.find(".border").forEach((node) => node.destroy());
 
     borders.forEach((border) => { 
-      console.log(border);
+      // console.log(border);
       const rect = new Konva.Rect({
         // points: region.points.flatMap((p) => [p.x, p.y]),
         stroke: border.color,

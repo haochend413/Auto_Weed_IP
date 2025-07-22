@@ -52,55 +52,56 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     // console.log(det)
 
     // console.log(seg) 
-  
-    const newRegions: Region[] = [];
-    
-    let level = 0;
-    let count = 0;
- 
-    for (const [idx, r] of seg.entries()) {
-      level += 1;
-      for (const contour of r) { 
-        count += 1;
-        // console.log("contour", contour);
-        
-        if (Array.isArray(contour)) {
-          const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));
-          const newRegion: Region = {
-            id: `region-${level}-${count}`,
-            points: newPoints,
-            color: "#ff0000" 
-          };
-          // console.log("new region", newRegion);
+    if (checked.get("segment")) {
+      const newRegions: Region[] = [];
           
-          // Add to our collection instead of updating state
-          newRegions.push(newRegion);
-        } else {
-          // console.warn(`Skipping non-array contour: ${contour}`);
+      let level = 0;
+      let count = 0;
+  
+      for (const [idx, r] of seg.entries()) {
+        level += 1;
+        for (const contour of r) { 
+          count += 1;
+          console.log("contour", contour);
+          
+          if (Array.isArray(contour)) {
+            try {
+              const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));
+              const newRegion: Region = {
+              id: `region-${level}-${count}`,
+              points: newPoints,
+              color: "#ff0000" 
+            };
+            // console.log("new region", newRegion);
+            
+            // Add to our collection instead of updating state
+            newRegions.push(newRegion);
+            } catch(e) {
+              
+            }
+            
+            
+
+          } else {
+            // console.warn(`Skipping non-array contour: ${contour}`);
+          }
         }
+      }
+      
+      // Now update state once with all the new regions
+      if (newRegions.length > 0) {
+        console.log(`Adding ${newRegions.length} new regions`);
+        setRegions([...regions, ...newRegions]);
       }
     }
     
-    // Now update state once with all the new regions
-    if (newRegions.length > 0) {
-      console.log(`Adding ${newRegions.length} new regions`);
-      setRegions([...regions, ...newRegions]);
-    }
 
-    const newBorders: Border[] = []; 
-
-    let l = 0;
-    // let c = 0;
- 
-    for (const [idx, box] of det.entries()) {
-      // console.log(b)
-      l += 1;
-      // for (const box of b) { 
-        // c += 1;
-        // console.log("contour", contour);
-        
+    if (checked.get("detect")) {
+      const newBorders: Border[] = []; 
+      let l = 0;  
+      for (const [idx, box] of det.entries()) {
+        l += 1;
         if (Array.isArray(box)) {
-          
           const newBorder: Border = {
             id: `border-${l}`,
             x: box[0],
@@ -113,14 +114,16 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
           
           // Add to our collection instead of updating state
           newBorders.push(newBorder);
+        }
+      }
+      
+      // Now update state once with all the new regions
+      if (newBorders.length > 0) {
+        console.log(`Adding ${newBorders.length} new borders`);
+        setBorders([...borders, ...newBorders]);
       }
     }
     
-    // Now update state once with all the new regions
-    if (newBorders.length > 0) {
-      console.log(`Adding ${newBorders.length} new borders`);
-      setBorders([...borders, ...newBorders]);
-    }
   }
 
   // Sync zustand state with local state

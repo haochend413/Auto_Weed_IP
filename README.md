@@ -9,18 +9,18 @@ Automatic weed classification & segmentation powered by YOLO.
 
 python 3.13 (maybe), go 1.24.4
 
-## Installation
+## Installation & Server Deploy
 
 - Build from source
   1. Clone the repo : `git clone https://github.com/haochend413/Auto_Weed_IP.git`
   2. System permission: `chmod -x setup.sh localserver.sh`
   3. Environment setup: `./setup.sh`.
   4. To run server locally on 8000 port : `./localserver.sh` (Right now the only option). 
-  5. build & start frontend:
+  5. build & start terminal CLI:
      - `cd frontend`
      - `go build -o awd`
 
-## Frontend Use Guide
+## CLI Use Guide
 
 [![Guide](https://img.youtube.com/vi/jOXxdtn0LE8/0.jpg)](https://youtu.be/jOXxdtn0LE8)
 
@@ -49,3 +49,13 @@ python 3.13 (maybe), go 1.24.4
 
 
   The results will be stored in `~/Awd_Results` folder as a zip file named after time stored. 
+
+
+## GUI
+
+Built with TypeScript + Next.js. 
+
+- automatic detection / segmentation / classification
+- local upload 
+- manual labeling / fine-tuning results
+- downloadable image / data

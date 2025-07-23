@@ -177,7 +177,6 @@ def runCombined(request: CombinedRequest = Body(...)):
         res_dec = models["detect"](
             source=src, save=False, show_conf=False, project=processed_dir
         )
-
         res_dec_map = {Path(r.path).name: r for r in res_dec}
     if ops[1]:
         res_seg = models["segment"](
@@ -190,7 +189,7 @@ def runCombined(request: CombinedRequest = Body(...)):
             source=src, save=False, show_conf=False, project=processed_dir
         )
         res_cls_map = {Path(r.path).name: r for r in res_cls}
-
+    # store info
     # read and get all images
 
     print(image_paths)
@@ -210,6 +209,7 @@ def runCombined(request: CombinedRequest = Body(...)):
             result[img_name]["detect"] = []
             for box in boxes:
                 xyxy = box.xyxy[0].cpu().numpy().astype(int)
+                print(xyxy)
                 result[img_name]["detect"].append(xyxy.tolist())
                 # draw on original image;
                 cv2.rectangle(
@@ -236,9 +236,18 @@ def runCombined(request: CombinedRequest = Body(...)):
                 for mask_idx in range(masks_data.shape[0]):
                     mask = masks_data[mask_idx] * 255
 
-                    # convert to serialized json data for frontend vector overlay
+                    # resize the masks for GUI demo, and suit original image size;
+                    if mask.shape[0] != height or mask.shape[1] != width:
+                        mask_resized = cv2.resize(
+                            mask.astype("uint8"),
+                            (width, height),
+                            interpolation=cv2.INTER_NEAREST,
+                        )
+                    else:
+                        mask_resized = mask.astype("uint8")
+
                     contours, _ = cv2.findContours(
-                        (mask).astype("uint8"),
+                        mask_resized,
                         cv2.RETR_EXTERNAL,
                         cv2.CHAIN_APPROX_SIMPLE,
                     )
@@ -246,6 +255,7 @@ def runCombined(request: CombinedRequest = Body(...)):
                     for cnt in contours:
                         points = cnt.squeeze().tolist()
                         contours_serializable.append(points)
+                        print(contours_serializable)
                     result[img_name]["segment"].append(contours_serializable)
 
                     # draw on original image;

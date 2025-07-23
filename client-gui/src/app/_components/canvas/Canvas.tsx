@@ -233,7 +233,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     regions.forEach((region) => { 
       // console.log(region)
       const line = new Konva.Line({
-        points: region.points.flatMap((p) => [p.x, p.y]),
+        points: region.points.flatMap((p) => [p.x * SCALE, p.y * SCALE]),
         stroke: region.color,
         strokeWidth: 0.5,
         closed: true,

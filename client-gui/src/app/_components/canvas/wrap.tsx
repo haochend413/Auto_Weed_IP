@@ -6,6 +6,7 @@ import "./style.css";
 import useCanvasStore from "../../_store/canvas";
 const Canvas = dynamic(() => import('./Canvas'), { ssr: false });
 import RegionsList from "./RegionsList";
+import BorderList from "./BordersList";
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 
@@ -73,11 +74,16 @@ const Wrap =  () => {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
+    overflow: "auto", 
   }}>
     <h3 style={{ color: "#1976d2", fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Regions</h3>
     <RegionsList />
+        <h3 style={{ color: "#1976d2", fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Borders</h3>
+    <BorderList />
   </div>
+
+
 
   <div className="right-panel" style={{
     flex: 1, 

@@ -7,8 +7,8 @@ import { getRelativePointerPosition, zoomLayer, zoomStage } from './utils';
 
 let id = 1;
 
-//This SCALE is for sizes change between image-canvas, has nothing to do with cv2 ! 
-const SCALE = 0.175; 
+
+
 
 interface CanvasProps {
   stageRef?: React.RefObject<Konva.Stage | null>;
@@ -25,11 +25,6 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
   //used for rendering the Konva elements
   const containerRef = useRef<HTMLDivElement>(null);
   // Add state to store and display stage position (tmp)
-  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0, scale: 1 });
-  const [imagelyerpos, setimgpos] = useState({ x: 0, y: 0, scale: 1 });
-  const [regionslyerpos, setregpos] = useState({ x: 0, y: 0, scale: 1 });
-  //we use this to manage the focused layer; 
-  
 
 
   const width = useCanvasStore((s) => s.width);
@@ -96,15 +91,24 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
       }
     );
     borderLayerRef.current = borderLayer;
-    const background = new Konva.Rect({
+    const background1 = new Konva.Rect({
       x: 0,
       y: 0,
       width: stage.width(),
       height: stage.height(),
       fill: 'transparent',
-      listening: true
+      listening: true,
     });
-    regionLayer.add(background);
+    regionLayer.add(background1); 
+    const background2 = new Konva.Rect({
+      x: 0,
+      y: 0,
+      width: stage.width(),
+      height: stage.height(),
+      fill: 'transparent',
+      listening: true,
+    });
+    borderLayer.add(background2);
 
     stage.add(imageLayer);
     stage.add(regionLayer);
@@ -131,18 +135,15 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
 
 
     //modify this to be drawing on layer; 
-
-
     regionLayer.on("mousedown", () => { 
+
       if (!spacePressed) {
         toggleDrawing();
         const point = getRelativePointerPosition(stage, regionLayer);
-        // Multiply x and y by SCALE
-        const scaledPoint = { x: point.x, y: point.y  };
         const region = {
           id: id++,
           color: Konva.Util.getRandomColor(),
-          points: [scaledPoint],
+          points: [point],
         };
         setRegions([...regionsRef.current, region]);
       }
@@ -172,10 +173,61 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
       if (lastRegion.points.length < 3) {
         setRegions(prevRegions.slice(0, -1));
       }
+      console.log(borders)
       toggleDrawing();
       }
-
     });
+
+
+
+
+
+    //modify this to be drawing on layer; 
+    borderLayer.on("mousedown", () => { 
+      console.log(focusLayer)
+      if (!spacePressed) {
+        toggleDrawing();
+        const point = getRelativePointerPosition(stage, borderLayer);
+        const border = {
+          id: id++,
+          color: Konva.Util.getRandomColor(),
+          x: point.x,
+          y: point.y,
+          width: 0, 
+          height: 0,  
+        };
+        setBorders([...borderRef.current, border]);
+        console.log(borders)
+      }
+    });
+
+    borderLayer.on("mousemove", () => {
+      if (!spacePressed) {
+        if (!isDrawingRef.current) return;
+        const point = getRelativePointerPosition(stage, borderLayer);
+        const prevBorders = borderRef.current;
+        if (!prevBorders.length) return;
+        const lastBorder = { ...prevBorders[prevBorders.length - 1] };
+        // lastBorder.points = [...lastBorder.points, point];
+        // const newRegions = [...prevBorders.slice(0, -1), lastBorder];
+        lastBorder.width = point.x - lastBorder.x
+        lastBorder.height = point.y - lastBorder.y
+        const newBorders = [...prevBorders.slice(0, -1), lastBorder];
+        setBorders(newBorders)
+      }
+    });
+
+    borderLayer.on("mouseup", () => {
+            if (!spacePressed) {
+              if (!isDrawingRef.current) return;
+      const prevBorders = borderRef.current;
+      if (!prevBorders.length) return;
+      console.log(borders)
+      toggleDrawing();
+      }
+    });
+
+
 
     // Resize handling
     const resize = () => {

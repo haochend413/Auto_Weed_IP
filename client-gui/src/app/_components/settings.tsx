@@ -8,6 +8,8 @@ import useCanvasStore, {Region, Border} from '../_store/canvas';
 
 import "./style.css"
 
+//This SCALE is for sizes change between image-canvas, has nothing to do with cv2 ! 
+const SCALE = 0.175; 
 
 const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   const runOps = useModelStore((s) => s.runOps);
@@ -67,7 +69,10 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
           
           if (Array.isArray(contour)) {
             try {
-              const newPoints = contour.map(([x, y]: [number, number]) => ({ x, y }));
+              const newPoints = contour.map(([x, y]: [number, number]) => ({
+                x: x * SCALE,
+                y: y * SCALE
+              }));
               const newRegion: Region = {
               id: `region-${level}-${count}`,
               points: newPoints,
@@ -105,10 +110,10 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
         if (Array.isArray(box)) {
           const newBorder: Border = {
             id: `border-${l}`,
-            x: box[0],
-            y: box[1], 
-            width: box[2] - box[0], 
-            height: box[3] - box[1], 
+            x: box[0] * SCALE,
+            y: box[1] * SCALE, 
+            width: (box[2] - box[0]) * SCALE, 
+            height:(box[3] - box[1]) * SCALE, 
             color: "#1900ffff" 
           };
           // console.log("new region", newRegion);

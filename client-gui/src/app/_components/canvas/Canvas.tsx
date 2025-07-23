@@ -7,6 +7,7 @@ import { getRelativePointerPosition, zoomLayer, zoomStage } from './utils';
 
 let id = 1;
 
+//This SCALE is for sizes change between image-canvas, has nothing to do with cv2 ! 
 const SCALE = 0.175; 
 
 interface CanvasProps {
@@ -134,30 +135,32 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
 
     regionLayer.on("mousedown", () => { 
       if (!spacePressed) {
-              toggleDrawing();
-      const point = getRelativePointerPosition(stage, regionLayer);
-      const region = {
-        id: id++,
-        color: Konva.Util.getRandomColor(),
-        points: [point],
-      };
-      setRegions([...regionsRef.current, region]);
+        toggleDrawing();
+        const point = getRelativePointerPosition(stage, regionLayer);
+        // Multiply x and y by SCALE
+        const scaledPoint = { x: point.x, y: point.y  };
+        const region = {
+          id: id++,
+          color: Konva.Util.getRandomColor(),
+          points: [scaledPoint],
+        };
+        setRegions([...regionsRef.current, region]);
       }
+    });
 
-    }); 
- 
     regionLayer.on("mousemove", () => {
       if (!spacePressed) {
-              if (!isDrawingRef.current) return;
-      const point = getRelativePointerPosition(stage, regionLayer);
-      const prevRegions = regionsRef.current;
-      if (!prevRegions.length) return;
-      const lastRegion = { ...prevRegions[prevRegions.length - 1] };
-      lastRegion.points = [...lastRegion.points, point];
-      const newRegions = [...prevRegions.slice(0, -1), lastRegion];
-      setRegions(newRegions);
+        if (!isDrawingRef.current) return;
+        const point = getRelativePointerPosition(stage, regionLayer);
+        // Multiply x and y by SCALE
+        const scaledPoint = { x: point.x , y: point.y };
+        const prevRegions = regionsRef.current;
+        if (!prevRegions.length) return;
+        const lastRegion = { ...prevRegions[prevRegions.length - 1] };
+        lastRegion.points = [...lastRegion.points, scaledPoint];
+        const newRegions = [...prevRegions.slice(0, -1), lastRegion];
+        setRegions(newRegions);
       }
-
     });
 
     regionLayer.on("mouseup", () => {
@@ -233,7 +236,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     regions.forEach((region) => { 
       // console.log(region)
       const line = new Konva.Line({
-        points: region.points.flatMap((p) => [p.x * SCALE, p.y * SCALE]),
+        points: region.points.flatMap((p) => [p.x , p.y ]),
         stroke: region.color,
         strokeWidth: 0.5,
         closed: true,
@@ -263,10 +266,10 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
         strokeWidth: 2,
         // closed: true,
         // fill: border.color + "33",
-        x: border.x * SCALE,
-        y: border.y * SCALE, 
-        width: border.width * SCALE, 
-        height: border.height * SCALE, 
+        x: border.x ,
+        y: border.y , 
+        width: border.width , 
+        height: border.height , 
         name: "border",
       });
       borderLayer.add(rect);

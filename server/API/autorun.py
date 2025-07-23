@@ -24,25 +24,6 @@ from model import models, get_models
 
 model_router = APIRouter()
 
-# models = {
-#     "detect": YOLO(Path(__file__).parent.parent / "models" / "detection" / "best.pt"),
-#     "segment": YOLO(Path(__file__).parent.parent / "models" / "segment" / "best.pt"),
-#     "classify": YOLO(Path(__file__).parent.parent / "models" / "classify" / "best.pt"),
-# }
-
-# # Add model class names
-# models["classify"].model.names = {
-#     0: "ziziphus mauritiana",
-#     1: "lantana camara",
-#     2: "parkinsonia aculeata",
-#     3: "parthenium hysterophorus",
-#     4: "vachellia nilotica",
-#     5: "cryptostegia grandiflora",
-#     6: "chromolaena odorata",
-#     7: "gutierrezia sarothrae",
-#     8: "none",
-# }
-
 models = get_models()
 
 

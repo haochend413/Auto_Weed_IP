@@ -67,7 +67,7 @@ const Wrap =  () => {
     width: 300, // or your desired fixed width
     minWidth: 0,
     padding: "32px 18px 32px 32px",
-    background: "#f0f4ff",
+    background: "#ebeffaff",
     borderRight: "2px solid #bcd",
     boxShadow: "2px 0 8px rgba(25,118,210,0.04)",
     display: "flex",

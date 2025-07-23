@@ -134,6 +134,7 @@ class CombinedRequest(BaseModel):
     TopOnly: bool
 
 
+# useful: to_json(), save_txt() (for data output);
 @model_router.post("/combined")
 # helper fun runAll
 def runCombined(request: CombinedRequest = Body(...)):
@@ -160,12 +161,18 @@ def runCombined(request: CombinedRequest = Body(...)):
     raw_upload_dir.mkdir(exist_ok=True)
     processed_dir.mkdir(exist_ok=True)
 
-    src = str(raw_upload_dir)
+    i_src = str(raw_upload_dir)
 
     # Only run models that are enabled in ops
     res_dec = res_seg = res_cls = None
     res_dec_map = res_seg_map = res_cls_map = {}
 
+    image_paths = glob.glob(str(i_src) + "/*.jpg")
+    # Sort by time;
+    image_paths = sorted(image_paths, key=lambda x: os.path.getmtime(x), reverse=True)
+    if TopOnly:
+        image_paths = image_paths[:1]
+    src = image_paths
     if ops[0]:
         res_dec = models["detect"](
             source=src, save=False, show_conf=False, project=processed_dir
@@ -185,11 +192,8 @@ def runCombined(request: CombinedRequest = Body(...)):
         res_cls_map = {Path(r.path).name: r for r in res_cls}
 
     # read and get all images
-    image_paths = glob.glob(str(src) + "/*.jpg")
-    # Sort by time;
-    image_paths = sorted(image_paths, key=lambda x: os.path.getmtime(x), reverse=True)
-    if TopOnly:
-        image_paths = image_paths[:1]
+
+    print(image_paths)
     for img_path in image_paths:
         img_name = Path(img_path).name
         img = cv2.imread(img_path)
@@ -202,12 +206,12 @@ def runCombined(request: CombinedRequest = Body(...)):
         if ops[0] and img_name in res_dec_map:
             res_dec_r = res_dec_map[img_name]
             boxes = res_dec_r.boxes
-            print(res_dec_r.to_json())
-            print(res_dec_r.to_html())
+            # print(res_dec_r.to_json())
             result[img_name]["detect"] = []
             for box in boxes:
                 xyxy = box.xyxy[0].cpu().numpy().astype(int)
                 result[img_name]["detect"].append(xyxy.tolist())
+                # draw on original image;
                 cv2.rectangle(
                     img, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (255, 0, 0), 2
                 )
@@ -244,7 +248,7 @@ def runCombined(request: CombinedRequest = Body(...)):
                         contours_serializable.append(points)
                     result[img_name]["segment"].append(contours_serializable)
 
-                    # draw directly on returned image
+                    # draw on original image;
                     colored_mask = cv2.merge([mask.astype("uint8")] * 3)
                     color = np.random.randint(0, 255, size=3).tolist()
                     colored_mask = (colored_mask * (np.array(color) / 255)).astype(

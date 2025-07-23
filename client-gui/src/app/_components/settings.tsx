@@ -36,6 +36,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
         runOps.get("segment") || false, 
         runOps.get("classify") || false
     ];
+
     const response = await fetch(baseServerURL + "/model/combined", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -44,9 +45,9 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     });
     
     const result = await response.json(); 
-    // console.log(result)
+
+    //only capture the first item in the response; 
     const firstImgName = Object.keys(result)[0];
-    //now there is only segment 
     const seg = result[firstImgName]["segment"];
     const det = result[firstImgName]["detect"]; 
     // console.log(det)

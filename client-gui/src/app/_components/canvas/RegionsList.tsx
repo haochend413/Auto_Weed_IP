@@ -12,6 +12,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import useCanvasStore from "../../_store/canvas";
 import type { Region } from "../../_store/canvas";
+import { colors } from "@mui/material";
 
 
 type RegionItemProps = {  
@@ -32,16 +33,34 @@ const RegionItem: React.FC<RegionItemProps> = ({ region, onRemove }) => {
     padding: "8px",
     margin: "4px 0",
     display: "flex",
+    color: "black", 
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "white",
     cursor: "grab",
+    
   };
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <span>Region #{region.id}</span>
-      <button onClick={() => onRemove(region.id)}>Delete</button>
+      <button
+        onClick={() => onRemove(region.id)}
+        style={{
+          backgroundColor: "grey",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          padding: "2px 4px",
+          marginLeft: "12px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          transition: "background 0.2s",
+        }}
+        title="Delete this region"
+      >
+        Delete
+      </button>
     </div>
   );
 };

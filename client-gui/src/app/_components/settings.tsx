@@ -9,7 +9,7 @@ import useCanvasStore, {Region, Border} from '../_store/canvas';
 import "./style.css"
 
 //This SCALE is for sizes change between image-canvas, has nothing to do with cv2 ! 
-const SCALE = 0.175; 
+// const SCALE = 0.15575; 
 
 const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   const runOps = useModelStore((s) => s.runOps);
@@ -21,6 +21,8 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   //borders
   const borders = useCanvasStore((s) => s.borders)
   const setBorders = useCanvasStore((s) => s.setBorders) 
+  //scale
+  const SCALE = useCanvasStore((s) => s.scale)
 
   // Local state for checkboxes as a Map
   const [checked, setChecked] = useState<Map<string, boolean>>(
@@ -48,7 +50,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     
     const result = await response.json(); 
 
-    //only capture the first item in the response; 
+    //demo latest image 
     const firstImgName = Object.keys(result)[0];
     const seg = result[firstImgName]["segment"];
     const det = result[firstImgName]["detect"]; 
@@ -62,7 +64,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
       let count = 0;
   
       for (const [idx, r] of seg.entries()) {
-        level += 1;
+        level += 1; 
         for (const contour of r) { 
           count += 1;
           console.log("contour", contour);

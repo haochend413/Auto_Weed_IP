@@ -7,11 +7,7 @@ import useCanvasStore from "../../_store/canvas";
 const Canvas = dynamic(() => import('./Canvas'), { ssr: false });
 import RegionsList from "./RegionsList";
 import BorderList from "./BordersList";
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
 
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 // import useStore from "../../store";
 
 

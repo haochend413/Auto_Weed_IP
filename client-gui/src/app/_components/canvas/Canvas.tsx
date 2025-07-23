@@ -142,7 +142,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
         const point = getRelativePointerPosition(stage, regionLayer);
         const region = {
           id: id++,
-          color: Konva.Util.getRandomColor(),
+          color: "red", 
           points: [point],
         };
         setRegions([...regionsRef.current, region]);
@@ -190,7 +190,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
         const point = getRelativePointerPosition(stage, borderLayer);
         const border = {
           id: id++,
-          color: Konva.Util.getRandomColor(),
+          color: "blue", 
           x: point.x,
           y: point.y,
           width: 0, 
@@ -292,7 +292,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
         stroke: region.color,
         strokeWidth: 0.5,
         closed: true,
-        fill: region.color + "33",
+        fill: "#ff20205e",
         name: "region",
       });
       regionLayer.add(line);
@@ -302,7 +302,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
   }, [regions]);
 
 
-    // Redraw regions whenever `regions` changes
+    // Redraw borders whenever `borders` changes
   useEffect(() => {
     const borderLayer = borderLayerRef.current;
     if (!borderLayer) return;

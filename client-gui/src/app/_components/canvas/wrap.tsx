@@ -28,6 +28,7 @@ const handleDownload = (stage: Konva.Stage | null) => {
  
 const Wrap =  () => {
   const width = useCanvasStore((s) => s.width);
+  const height = useCanvasStore((s) => s.height);
   const stageRef = useRef<Konva.Stage | null>(null); 
   const[focusName, setFocusName] = useState<string>('region')
   const imageLayerRef = useRef<Konva.Layer | null>(null);
@@ -95,17 +96,17 @@ const Wrap =  () => {
     justifyContent: "center",
     position: "relative" // for absolute button
   }}>
-          <div style={{ 
+      <div style={{ 
         position: "absolute", 
-        top: 10, 
-        left: 10,  
+        top: 730, 
+        left: 350,  
         zIndex: 1000,
         width: "200px",
         background: "rgba(0,0,0,0.7)",
         padding: "8px",
         borderRadius: "5px"
       }}>
-        <div style={{ marginBottom: "8px", color: "white", fontSize: "14px", fontWeight: "bold" }}>
+        <div style={{  marginBottom: "8px", color: "white", fontSize: "14px", fontWeight: "bold" }}>
           Layers
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -171,8 +172,21 @@ const Wrap =  () => {
           </button>
         </div>
       </div>
-
-    <Canvas stageRef={stageRef} focusLayer={focusLayer} setFocusLayer={setFocusLayer} imageLayerRef={imageLayerRef} regionLayerRef={regionLayerRef} focusName={focusName} setFocusName={setFocusName} borderLayerRef={borderLayerRef}/>
+    <div       style={{
+        position: "absolute",
+        top: 2,
+        left: -5,
+        zIndex: 1000,
+        color: "white",
+        border: "none",
+        fontWeight: 600,
+        fontSize: 18,
+        boxShadow: "0 2px 8px rgba(25,118,210,0.12)",
+        cursor: "pointer",
+        transition: "background 0.2s"
+      }}> 
+          <Canvas stageRef={stageRef} focusLayer={focusLayer} setFocusLayer={setFocusLayer} imageLayerRef={imageLayerRef} regionLayerRef={regionLayerRef} focusName={focusName} setFocusName={setFocusName} borderLayerRef={borderLayerRef}/>
+    </div>
     <button
       style={{
         position: "absolute",
@@ -199,7 +213,7 @@ const Wrap =  () => {
   </div>
 
       </div>
-      {/* Layer Selection Bar */}
+
 
     </div>
   );

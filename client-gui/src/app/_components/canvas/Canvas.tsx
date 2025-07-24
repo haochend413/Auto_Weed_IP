@@ -7,9 +7,6 @@ import { getRelativePointerPosition, zoomLayer, zoomStage } from './utils';
 
 let id = 1;
 
-
-
-
 interface CanvasProps {
   stageRef?: React.RefObject<Konva.Stage | null>;
   imageLayerRef: React.RefObject<Konva.Layer | null>;
@@ -94,8 +91,8 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     const background1 = new Konva.Rect({
       x: 0,
       y: 0,
-      width: stage.width(),
-      height: stage.height(),
+      width: width,
+      height: height,
       fill: 'transparent',
       listening: true,
     });
@@ -103,8 +100,8 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     const background2 = new Konva.Rect({
       x: 0,
       y: 0,
-      width: stage.width(),
-      height: stage.height(),
+      width: width,
+      height: height,
       fill: 'transparent',
       listening: true,
     });
@@ -330,23 +327,19 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     borderLayer.batchDraw();
   }, [borders]);
 
-
-
-
-
-
   return ( 
     <div style={{ position: "relative" }}>
       {/* Stage position display */}
       <div
         ref={containerRef}
         style={{
+          // bottom: 400,
           border: "1px solid black", 
-          width: "100%",
+          width: width,
           height: height, 
           position: "relative" 
         }}
-      >
+      > 
         {imageLayerRef.current && <BaseImage layer={imageLayerRef.current} />}
       </div>
     </div>

@@ -1,8 +1,11 @@
+#!/bin/bash
+
 echo "Starting local server"
 cd server
 source venv/bin/activate
-# mkcert will not work for distribution. 
-uvicorn main:app 
-    --host 0.0.0.0  
-    --port 8000 
-    --reload 
+# mkcert will not work for distribution.
+uvicorn main:app \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --reload
+

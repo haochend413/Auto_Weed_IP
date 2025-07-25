@@ -15,6 +15,7 @@ python 3.13 (maybe), go 1.24.4
   1. Clone the repo : `git clone https://github.com/haochend413/Auto_Weed_IP.git`
   2. System permission: `chmod -x setup.sh localserver.sh`
   3. Environment setup: `./setup.sh`.
+  *Note: This might take a while; 
   4. To run server locally on 8000 port : `./localserver.sh` (Right now the only option). 
   5. build & start terminal CLI:
      - `cd frontend`

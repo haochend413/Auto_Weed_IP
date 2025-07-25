@@ -42,8 +42,9 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
   const borderRef = useRef(borders); 
 
 
-    //actions: drag
-    let spacePressed = false;
+  //actions: drag
+  let spacePressed = false;
+
 
 
   
@@ -334,7 +335,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
         ref={containerRef}
         style={{
           // bottom: 400,
-          border: "1px solid black", 
+          border: "1px solid #cdcdcdff", 
           width: width,
           height: height, 
           position: "relative" 

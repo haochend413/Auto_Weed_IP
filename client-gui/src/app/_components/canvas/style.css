@@ -6,16 +6,17 @@
 
 .left-panel {
   min-width: 0;
-  flex: 1;
+  /* flex: 1; */
   height: 100%;
   background: #f0f4ff;
-  border-right: 2px solid #bcd;
+  /* border-right: 2px solid #bcd; */
+
   /* Add more left-specific styles here */
 }
 
 .right-panel {
   min-width: 0;
-  flex: 1;
+  /* flex: 1; */
   height: 100%;
   background: #fff8f0;
   border-left: 2px solid #edc;

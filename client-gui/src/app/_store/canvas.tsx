@@ -50,7 +50,7 @@ interface StoreState {
 } 
 
 const useCanvasStore = create<StoreState>(set => ({
-    width: 900,
+    width: 1000,
     height: 700,
     setSize: ({ width, height }: Size) => set({ width, height }),
 

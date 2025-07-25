@@ -48,12 +48,13 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
       body: JSON.stringify({ ops: signal , TopOnly: true})
     });
     
-    const result = await response.json(); 
+    const result = await response.json();  
 
     //demo latest image 
     const firstImgName = Object.keys(result)[0];
     const seg = result[firstImgName]["segment"];
     const det = result[firstImgName]["detect"]; 
+    // result needs to return the size of the image; 
     // console.log(det)
 
     // console.log(seg) 
@@ -85,14 +86,8 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
             // Add to our collection instead of updating state
             newRegions.push(newRegion);
             } catch(e) {
-              
             }
-            
-            
-
-          } else {
-            // console.warn(`Skipping non-array contour: ${contour}`);
-          }
+          } 
         }
       }
       

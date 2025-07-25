@@ -49,68 +49,130 @@ const Wrap =  () => {
     setFocusLayer(layerRefs[name]?.current ?? null);
   };
 
-  return (
-    <div className="App" style={{
-      display: 'flex',
-      height: '100%',
-      width: '100%',
-      borderRadius: 16,
+return (
+  <div
+    className="App"
+    style={{
       boxShadow: "0 2px 16px rgba(25,118,210,0.10)",
       overflow: "hidden",
-      background: "linear-gradient(90deg, #e3f0ff 0%, #fff8f0 100%)"
-    }}>
+      background: "linear-gradient(90deg, #0d3767ff 0%, #fff8f0 100%)",
+      height: "100vh",
+      width: "100vw",
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+    {/* Top row: Canvas only */}
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#222222ff",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Canvas
+          stageRef={stageRef}
+          focusLayer={focusLayer}
+          setFocusLayer={setFocusLayer}
+          imageLayerRef={imageLayerRef}
+          regionLayerRef={regionLayerRef}
+          focusName={focusName}
+          setFocusName={setFocusName}
+          borderLayerRef={borderLayerRef}
+        />
+      </div>
+    </div>
 
-      <div style={{ display: "flex", width: "100%", height: "100vh" }}>
-  <div className="left-panel" style={{
-    width: 300, // or your desired fixed width
-    minWidth: 0,
-    padding: "32px 18px 32px 32px",
-    background: "#ebeffaff",
-    borderRight: "2px solid #bcd",
-    boxShadow: "2px 0 8px rgba(25,118,210,0.04)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-    overflow: "auto", 
-  }}>
-    <h3 style={{ color: "#1976d2", fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Regions</h3>
-    <RegionsList />
-        <h3 style={{ color: "#1976d2", fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Borders</h3>
-    <BorderList />
-  </div>
-
-
-
-  <div className="right-panel" style={{
-    flex: 1, 
-    minWidth: 0,
-    width: 2000,
-    background: "#fff8f0",
-    borderLeft: "2px solid #edc",
-    boxShadow: "-2px 0 8px rgba(67,160,71,0.04)",
-    padding: "32px 32px 32px 18px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative" // for absolute button
-  }}>
-      <div style={{ 
-        position: "absolute", 
-        top: 730, 
-        left: 350,  
-        zIndex: 1000,
-        width: "200px",
-        background: "rgba(0,0,0,0.7)",
-        padding: "8px",
-        borderRadius: "5px"
-      }}>
-        <div style={{  marginBottom: "8px", color: "white", fontSize: "14px", fontWeight: "bold" }}>
-          Layers
+    {/* Bottom row: sidebar, button, layers */}
+    <div
+      style={{
+        width: "100vw",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "stretch",
+        background: "rgba(40, 40, 40, 0.95)",
+        boxShadow: "0 -2px 8px rgba(25,118,210,0.08)",
+        minHeight: 120,
+        overflow: "visible",
+      }}
+    >
+      {/* Sidebar section */}
+      <div
+        style={{
+          width: 320,
+          background: "#212121ff",
+          boxShadow: "2px 0 8px rgba(25,118,210,0.04)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          padding: "25px",
+          overflow: "auto",
+        }}
+      >
+        <div style={{ position: "relative", height: 200 }}>
+          <h3 style={{ color: "#1976d2", fontWeight: 500, fontSize: 15, marginBottom: 8 }}>Regions</h3>
+          <RegionsList />
+          <h3 style={{ color: "#1976d2", fontWeight: 500, fontSize: 15, marginBottom: 8 }}>Borders</h3>
+          <BorderList />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <button 
+      </div>
+
+      {/* Button section */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <button
+          style={{
+            background: "#1976d2",
+            color: "white",
+            border: "none",
+            padding: "12px 32px",
+            fontWeight: 600,
+            fontSize: 18,
+            boxShadow: "0 2px 8px rgba(25,118,210,0.12)",
+            cursor: "pointer",
+            transition: "background 0.2s"
+          }}
+          onClick={() => handleDownload(stageRef.current)}
+        >
+          Download Edited Image
+        </button>
+      </div>
+
+      {/* Layers section */}
+      <div
+        style={{
+          width: 240,
+          background: "rgba(0,0,0,0.7)",
+          padding: "12px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}
+      >
+        <div style={{ marginBottom: "8px", color: "white", fontSize: "14px", fontWeight: "bold" }}>
+          Focused Layer
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
+          <button
             style={{
               background: focusName === 'region' ? '#1976d2' : 'rgba(255,255,255,0.15)',
               color: 'white',
@@ -120,17 +182,14 @@ const Wrap =  () => {
               cursor: 'pointer',
               textAlign: 'left',
               fontWeight: focusName === 'region' ? 'bold' : 'normal',
-              transition: 'background 0.2s'
+              transition: 'background 0.2s',
+              width: '100%'
             }}
-            onClick={() => {
-              // const fakeEvent = { target: { value: 'region' } } as SelectChangeEvent;
-              switchFocus('region');
-            }}
+            onClick={() => switchFocus('region')}
           >
             Segmentations
           </button>
-          
-          <button 
+          <button
             style={{
               background: focusName === 'base image' ? '#1976d2' : 'rgba(255,255,255,0.15)',
               color: 'white',
@@ -140,17 +199,14 @@ const Wrap =  () => {
               cursor: 'pointer',
               textAlign: 'left',
               fontWeight: focusName === 'base image' ? 'bold' : 'normal',
-              transition: 'background 0.2s'
+              transition: 'background 0.2s',
+              width: '100%'
             }}
-            onClick={() => {
-              // const fakeEvent = { target: { value: 'base image' } } as SelectChangeEvent;
-              switchFocus('base image');
-        
-            }} 
+            onClick={() => switchFocus('base image')}
           >
             Base Image
           </button>
-          <button 
+          <button
             style={{
               background: focusName === 'border' ? '#1976d2' : 'rgba(255,255,255,0.15)',
               color: 'white',
@@ -160,63 +216,18 @@ const Wrap =  () => {
               cursor: 'pointer',
               textAlign: 'left',
               fontWeight: focusName === 'border' ? 'bold' : 'normal',
-              transition: 'background 0.2s'
+              transition: 'background 0.2s',
+              width: '100%'
             }}
-            onClick={() => {
-              // const fakeEvent = { target: { value: 'base image' } } as SelectChangeEvent;
-              switchFocus('border');
-        
-            }} 
+            onClick={() => switchFocus('border')}
           >
             Detections
           </button>
         </div>
       </div>
-    <div       style={{
-        position: "absolute",
-        top: 2,
-        left: -5,
-        zIndex: 1000,
-        color: "white",
-        border: "none",
-        fontWeight: 600,
-        fontSize: 18,
-        boxShadow: "0 2px 8px rgba(25,118,210,0.12)",
-        cursor: "pointer",
-        transition: "background 0.2s"
-      }}> 
-          <Canvas stageRef={stageRef} focusLayer={focusLayer} setFocusLayer={setFocusLayer} imageLayerRef={imageLayerRef} regionLayerRef={regionLayerRef} focusName={focusName} setFocusName={setFocusName} borderLayerRef={borderLayerRef}/>
     </div>
-    <button
-      style={{
-        position: "absolute",
-        bottom: 32,
-        left: 32,
-        zIndex: 1000,
-        background: "#1976d2",
-        color: "white",
-        border: "none",
-        borderRadius: 10,
-        padding: "12px 32px",
-        fontWeight: 600,
-        fontSize: 18,
-        boxShadow: "0 2px 8px rgba(25,118,210,0.12)",
-        cursor: "pointer",
-        transition: "background 0.2s"
-      }}
-      onClick={() => {
-        handleDownload(stageRef.current);
-      }}
-    >
-      Download Edited Image
-    </button>
   </div>
-
-      </div>
-
-
-    </div>
-  );
+);
 };
 
 export default Wrap; 

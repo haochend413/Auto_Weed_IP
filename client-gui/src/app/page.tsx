@@ -70,7 +70,7 @@ return (
     height: "100vh",
     margin: 0,
     padding: 0,
-    background: "linear-gradient(135deg, #e3f0ff 0%, #fff8f0 100%)",
+    background: "linear-gradient(135deg, #0f2236ff 0%, #fff8f0 100%)",
     borderRadius: 0,
     boxShadow: "none",
     fontFamily: "Inter, Arial, sans-serif",
@@ -81,8 +81,9 @@ return (
   }}>
     {/* Settings/Instructions Column */}
     <div style={{
-      width: folded ? 32 : 340,
-      minWidth: folded ? 32 : 280,
+      width: folded ? 12 : 230,
+      height: "100vh", 
+      // minWidth: folded ? 12 : 280,
       maxWidth: folded ? 32 : 400,
       background: "#fff",
       borderRight: "2px solid #bcd",
@@ -155,24 +156,29 @@ return (
           alignItems: "center",
           justifyContent: "center",
           zIndex: 1001,
-          borderTopRightRadius: 8,
-          borderBottomRightRadius: 8,
+
+
           boxShadow: "2px 0 8px rgba(25,118,210,0.08)"
         }}
       >
-        <span style={{ fontSize: 20, color: "#1976d2" }}>{folded ? "▶" : "◀"}</span>
+        <span style={{ fontSize: 20, color: "#1976d2" , position: "absolute", top: 10}}>{folded ? "▶" : "◀"}</span>
       </div>
     </div>
-    {/* Canvas Column */}
+
     <div style={{
+      // borderColor: "red", 
       flex: 1,
       // top: 0,
+      // width: 800, 
+      // position: "absolute", 
+      
       minWidth: 0,
       background: "#f0f4ff",
       padding: 0,
       display: "flex",
       alignItems: "center",
-      justifyContent: "center"
+      justifyContent: "center",
+
     }}>
       <Wrap />
     </div>

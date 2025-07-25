@@ -20,6 +20,7 @@ fi
 echo "Using $PYTHON_BIN"
 $PYTHON_BIN -m venv venv
 source venv/bin/activate
+echo "Installing dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
 deactivate 

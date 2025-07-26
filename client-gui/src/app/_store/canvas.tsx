@@ -33,6 +33,8 @@ interface StoreState {
 
     scale: number; 
     setScale: (scale: number) => void;
+    origScale: number; 
+    setOrigScale: (origScale: number) => void; 
 
     isDrawing: boolean;
     toggleIsDrawing: () => void;
@@ -61,6 +63,9 @@ const useCanvasStore = create<StoreState>(set => ({
         set(() => ({ imageWidth: size.width, imageHeight: size.height })),
     scale: 1,
     setScale: (scale: number) => set({ scale }),
+    origScale: 1, 
+    setOrigScale: (origScale: number) => set({ origScale }),
+
     isDrawing: false,
     toggleIsDrawing: () => set(state => ({ isDrawing: !state.isDrawing })),
 

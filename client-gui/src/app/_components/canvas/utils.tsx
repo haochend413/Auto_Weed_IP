@@ -1,4 +1,5 @@
 import Konva from 'konva'
+import useCanvasStore from '@/app/_store/canvas';
 
 
 
@@ -43,4 +44,18 @@ export function zoomLayer(layer: Konva.Layer, scaleBy: number) {
   layer.scale({ x: newScale, y: newScale });
   layer.position(newPos);
   layer.batchDraw();
+}
+
+//set the scale and position of the stage and layers to original; 
+export function setFitCanvas(stage: Konva.Stage | null, origScale: number) {
+  if (!stage) {
+    return; 
+  }
+ 
+  stage.scale({x: origScale, y: origScale}); //stage
+    // Set scale for all layers in the stage
+  stage.getLayers().forEach(layer => {
+    layer.scale({ x: origScale, y: origScale });
+    layer.batchDraw();
+  });
 }

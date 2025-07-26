@@ -128,7 +128,7 @@ export default function Home() {
             onChange={handleUpload}
           />
           {imageUrl && (
-            <div className="mt-3 text-green-700 font-bold text-base text-center border border-green-700 rounded-lg py-2 bg-green-50">
+            <div className="mt-3 text-green-200  text-base text-center ">
               Image uploaded!
             </div>
           )}

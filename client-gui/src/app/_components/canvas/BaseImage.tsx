@@ -13,6 +13,7 @@ const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
   const imageUrl = useImageStore((s) => s.imageUrl)
   const setImageSize = useCanvasStore((state) => state.setImageSize);
   const setScale = useCanvasStore((state) => state.setScale);
+  const setOrigScale = useCanvasStore((state) => state.setOrigScale);
   const width = useCanvasStore((state) => state.width);
   const height = useCanvasStore((state) => state.height);
 
@@ -34,10 +35,11 @@ const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
     console.log(imageObj.height)
   
 
-    //fit in
+    //fit in, determine the original scale; 
       const scale = Math.min(width / imageObj.width, height / imageObj.height);
       console.log(scale)
       setScale(scale);
+      setOrigScale(scale); 
       setImageSize({ width: imageObj.width, height: imageObj.height });
       konvaImage.scale({ x: scale, y: scale });
       layer.add(konvaImage);

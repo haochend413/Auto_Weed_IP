@@ -54,6 +54,8 @@ python 3.13 (maybe), go 1.24.4
 
 ## GUI
 
+[![Guide](https://img.youtube.com/vi/njic6qmwuzk/0.jpg)](https://youtu.be/njic6qmwuzk)
+
 Built with TypeScript + Next.js. 
 
 - automatic detection / segmentation / classification

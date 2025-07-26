@@ -208,7 +208,12 @@ const Wrap =  () => {
             </Button>
           </div>
           <div>
-            <Button onClick={() => setFitCanvas(stageRef.current, origScale)}>
+            <Button onClick={() => setFitCanvas(
+              stageRef.current,
+              [imageLayerRef.current, regionLayerRef.current, borderLayerRef.current],
+              imageLayerRef.current,
+              origScale,
+            )}> 
               Fit Canvas
             </Button>
           </div>

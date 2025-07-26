@@ -46,16 +46,35 @@ export function zoomLayer(layer: Konva.Layer, scaleBy: number) {
   layer.batchDraw();
 }
 
-//set the scale and position of the stage and layers to original; 
-export function setFitCanvas(stage: Konva.Stage | null, origScale: number) {
-  if (!stage) {
-    return; 
-  }
- 
-  stage.scale({x: origScale, y: origScale}); //stage
-    // Set scale for all layers in the stage
-  stage.getLayers().forEach(layer => {
-    layer.scale({ x: origScale, y: origScale });
-    layer.batchDraw();
+export function setFitCanvas(
+  stage: Konva.Stage | null,
+  layers: (Konva.Layer | null)[],
+  imageLayer: Konva.Layer | null,
+  origScale: number
+) {
+  if (!stage) return;
+
+  // 1. Reset stage
+  stage.scale({ x: 1, y: 1 });
+  stage.position({ x: 0, y: 0 });
+
+  // 2. Reset all layers
+  layers.forEach(layer => {
+    if (layer) {
+      layer.scale({ x: 1, y: 1 });
+      layer.position({ x: 0, y: 0 });
+      layer.batchDraw();
+    }
   });
+
+  // 3. Fit base image layer (scale image to fit canvas)
+  if (imageLayer && imageLayer.children.length > 0 ) {
+    const img = imageLayer.children[0];
+    
+    img.scale({ x: origScale, y: origScale });
+    img.position({ x: 0, y: 0 });
+    imageLayer.batchDraw();
+  }
+
+  stage.batchDraw();
 }

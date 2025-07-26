@@ -71,3 +71,33 @@
 .layer-name {
   font-size: 13px;
 }
+
+
+
+
+
+
+
+.custom-resize-handle {
+  height: 14px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: row-resize;
+  border: none;
+  outline: none;
+  position: relative;
+  z-index: 10;
+  transition: background 0.2s;
+}
+.custom-resize-handle:hover {
+  background: #1976d2;
+}
+.custom-resize-bar {
+  width: 48px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}

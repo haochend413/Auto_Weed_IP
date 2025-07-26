@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 import useModelStore from '../_store/model';
 import useServerStore from '../_store/server';
 import useCanvasStore, {Region, Border} from '../_store/canvas';
-
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import "./style.css"
 
 //This SCALE is for sizes change between image-canvas, has nothing to do with cv2 ! 
@@ -138,11 +139,11 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     ]));
   }, [runOps]);
 
-  const handleChange = (name: string) => ( 
-    event: React.ChangeEvent<HTMLInputElement>
+  const handleChange = (name: string) => (
+    checkedValue: boolean | "indeterminate"
   ) => {
     const newChecked = new Map(checked);
-    newChecked.set(name, event.target.checked);
+    newChecked.set(name, checkedValue === true);
     setChecked(newChecked);
     // Update zustand state
     setRunOps(new Map(newChecked));
@@ -153,27 +154,78 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
     console.log("Updated runOps:", selected);
   };
 
-  return (
-    <div>
-      <Stack direction="column" spacing={2}>
-        <label className="checkbox">
-          <Checkbox checked={checked.get("detect") || false} onChange={handleChange("detect")} />
-          Detection
-        </label>
-        <label className="checkbox">
-          <Checkbox checked={checked.get("segment") || false} onChange={handleChange("segment")} />
-          Segmentation
-        </label>
-        <label className="checkbox">
-          <Checkbox checked={checked.get("classify") || false} onChange={handleChange("classify")} />
-          Classification
-        </label>
-      </Stack>
-      <button className='run-btn' onClick={HandleRun}>
-        Run
-      </button>
-    </div>
-  );
+return (
+  <div>
+    <Stack direction="column" spacing={2}>
+      <Label
+        htmlFor="toggle-detect"
+        className={`w-40 flex items-start gap-3 rounded-lg border p-3 transition-colors
+          ${checked.get("detect")
+            ? "border-blue-600 bg-blue-50 dark:border-blue-900 dark:bg-blue-950"
+            : "border-gray-300 bg-transparent dark:border-gray-700"}
+          hover:bg-accent/50`}
+      >
+        <Checkbox
+        style={{
+          width: 20,
+        }}
+          checked={checked.get("detect") || false}
+          id="toggle-detect"
+          onCheckedChange={handleChange("detect")}
+          className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+        />
+        <div className="grid gap-1.5 font-normal">
+          <p className={`text-sm leading-none font-medium ${checked.get("detect") ? "text-blue-700 dark:text-blue-300" : "text-white"}`}>
+            Detection
+          </p>
+        </div>
+      </Label>
+      <Label
+        htmlFor="toggle-segment"
+        className={`w-40 flex items-start gap-3 rounded-lg border p-3 transition-colors
+          ${checked.get("segment")
+            ? "border-blue-600 bg-blue-50 dark:border-blue-900 dark:bg-blue-950"
+            : "border-gray-300 bg-transparent dark:border-gray-700"}
+          hover:bg-accent/50`}
+      >
+        <Checkbox
+          checked={checked.get("segment") || false}
+          id="toggle-segment"
+          onCheckedChange={handleChange("segment")}
+          className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+        />
+        <div className="grid gap-1.5 font-normal">
+          <p className={`text-sm leading-none font-medium ${checked.get("segment") ? "text-blue-700 dark:text-blue-300" : "text-white"}`}>
+            Segmentation
+          </p>
+        </div>
+      </Label>
+      <Label
+        htmlFor="toggle-classify"
+        className={`w-40 flex items-start gap-3 rounded-lg border p-3 transition-colors
+          ${checked.get("classify")
+            ? "border-blue-600 bg-blue-50 dark:border-blue-900 dark:bg-blue-950"
+            : "border-gray-300 bg-transparent dark:border-gray-700"}
+          hover:bg-accent/50`}
+      >
+        <Checkbox
+          checked={checked.get("classify") || false}
+          id="toggle-classify"
+          onCheckedChange={handleChange("classify")}
+          className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+        />
+        <div className="grid gap-1.5 font-normal">
+          <p className={`text-sm leading-none font-medium ${checked.get("classify") ? "text-blue-700 dark:text-blue-300" : "text-white"}`}>
+            Classification
+          </p>
+        </div>
+      </Label>
+    </Stack>
+    <button className='run-btn' onClick={HandleRun}>
+      Run
+    </button>
+  </div>
+);
 };
 
 export default Settings;

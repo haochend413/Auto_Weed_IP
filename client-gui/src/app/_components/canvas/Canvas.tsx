@@ -44,6 +44,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
 
   //actions: drag
   let spacePressed = false;
+  let sPressed = false; 
 
 
 
@@ -123,6 +124,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     });
     setFocusLayer(layerMap[focusName]);
 
+    let noKey = !spacePressed && !sPressed
 
 
     regionLayer.on("click", (e) => {
@@ -135,7 +137,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     //modify this to be drawing on layer; 
     regionLayer.on("mousedown", () => { 
 
-      if (!spacePressed) {
+      if (noKey) {
         toggleDrawing();
         const point = getRelativePointerPosition(stage, regionLayer);
         const region = {
@@ -148,7 +150,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     });
 
     regionLayer.on("mousemove", () => {
-      if (!spacePressed) {
+      if (noKey) {
         if (!isDrawingRef.current) return;
         const point = getRelativePointerPosition(stage, regionLayer);
         // Multiply x and y by SCALE
@@ -163,7 +165,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     });
 
     regionLayer.on("mouseup", () => {
-            if (!spacePressed) {
+            if (noKey) {
               if (!isDrawingRef.current) return;
       const prevRegions = regionsRef.current;
       if (!prevRegions.length) return;
@@ -183,7 +185,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     //modify this to be drawing on layer; 
     borderLayer.on("mousedown", () => { 
       console.log(focusLayer)
-      if (!spacePressed) {
+      if (noKey) {
         toggleDrawing();
         const point = getRelativePointerPosition(stage, borderLayer);
         const border = {
@@ -200,7 +202,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     });
 
     borderLayer.on("mousemove", () => {
-      if (!spacePressed) {
+      if (noKey) {
         if (!isDrawingRef.current) return;
         const point = getRelativePointerPosition(stage, borderLayer);
         const prevBorders = borderRef.current;
@@ -216,7 +218,7 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
     });
 
     borderLayer.on("mouseup", () => {
-            if (!spacePressed) {
+            if (noKey) {
               if (!isDrawingRef.current) return;
       const prevBorders = borderRef.current;
       if (!prevBorders.length) return;
@@ -274,6 +276,39 @@ const Canvas = ({ stageRef, imageLayerRef, regionLayerRef, borderLayerRef, focus
         }
       });
   }, [focusLayer])
+
+
+  useEffect(() => {
+    if (stageRef) {
+      if (stageRef.current) {
+        const s = stageRef.current; 
+        stageRef.current.on("wheel", (e) => {
+            e.evt.preventDefault();
+            const scaleBy = e.evt.deltaY > 0 ? 0.9 : 1.1;
+            zoomStage(s, scaleBy);
+        })
+      }
+    }
+
+            // let shiftPressed = false; 
+      window.addEventListener("keydown", (e) => {
+        if (e.code === "KeyS") { 
+          sPressed = true;
+          if (stageRef && stageRef.current) {
+            stageRef.current.draggable(true)
+          }
+        } 
+      });
+
+      window.addEventListener("keyup", (e) => {
+        if (e.code === "KeyS") {
+          sPressed = false; 
+          if (stageRef && stageRef.current) {
+            stageRef.current.draggable(true)
+          }
+        }
+      });
+  }, [])
 
   // Redraw regions whenever `regions` changes
   useEffect(() => {

@@ -1,13 +1,20 @@
 import type { NextConfig } from 'next';
 import type { Configuration } from 'webpack';
 
+
+const path = require("path");
+
 const nextConfig: NextConfig = {
   webpack: (config: Configuration, { isServer }) => {
+
+
+
     if (!config.resolve) {
       config.resolve = {};
     }
     if (!config.resolve.alias) {
       config.resolve.alias = {};
+      config.resolve.alias['@'] = path.resolve(__dirname);
     }
     if (!config.resolve.fallback) {
       config.resolve.fallback = {};

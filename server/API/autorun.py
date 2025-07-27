@@ -194,7 +194,7 @@ def runCombined(request: CombinedRequest = Body(...)):
                 result[img_name]["detect"].append(xyxy.tolist())
                 # draw on original image;
                 cv2.rectangle(
-                    img, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (255, 0, 0), 2
+                    img, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (255, 0, 0), 10
                 )
                 cv2.putText(
                     img,

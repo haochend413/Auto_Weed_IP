@@ -49,7 +49,7 @@ export function zoomLayer(layer: Konva.Layer, scaleBy: number) {
 export function setFitCanvas(
   stage: Konva.Stage | null,
   layers: (Konva.Layer | null)[],
-  imageLayer: Konva.Layer | null,
+  imageLayer: Konva.Layer | null, 
   origScale: number
 ) {
   if (!stage) return;

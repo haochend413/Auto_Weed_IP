@@ -7,6 +7,7 @@ import useCanvasStore from "../../_store/canvas";
 const Canvas = dynamic(() => import('./Canvas'), { ssr: false });
 import RegionsList from "./RegionsList";
 import BorderList from "./BordersList";
+import { Download } from "./Download";
 import { Button } from "@/components/ui/button";
 import {
   ResizableHandle,
@@ -14,12 +15,9 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { setFitCanvas } from "./utils";
-import { stages } from "konva/lib/Stage";
 
 // import useStore from "../../store";
 
-
-// src/app/_components/canvas/utils.ts
 const handleDownload = (stage: Konva.Stage | null) => { 
   // console.log("Clicked");
   if (stage) {
@@ -30,7 +28,7 @@ const handleDownload = (stage: Konva.Stage | null) => {
     link.href = dataURL;
     link.click(); 
   }
-};
+}; 
 
 
  
@@ -120,6 +118,7 @@ const Wrap =  () => {
             alignItems: "center",
             justifyContent: "center",
             padding: "0 32px",
+            flexDirection: "column", 
           }}
         >
           <Button
@@ -133,12 +132,17 @@ const Wrap =  () => {
               boxShadow: "0 2px 8px rgba(25,118,210,0.12)",
               cursor: "pointer",
               transition: "background 0.2s",
+              marginBottom: 10, 
             }}
             onClick={() => handleDownload(stageRef.current)}
           >
             Download Edited Image
           </Button>
+
+          <Download/>
+
         </div>
+  
 
         {/* Layers section */}
         <div

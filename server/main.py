@@ -49,6 +49,9 @@ app.mount("/raw_upload", StaticFiles(directory="raw_upload"), name="raw_upload")
 app.include_router(model_router, prefix="/model")
 app.include_router(gui_router, prefix="/gui")
 
+# define app states;
+app.state.curr_img = None
+
 # security
 app.add_middleware(
     CORSMiddleware,

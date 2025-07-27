@@ -82,6 +82,7 @@ export default function Home() {
               borderRadius: 10, 
               display: "flex",
               justifyContent: "center",
+              backgroundColor: "#0003adff", 
               alignItems: "center",
               marginBottom: 20, 
               borderColor: "#ff7700ff", 
@@ -92,7 +93,8 @@ export default function Home() {
                   fontSize: 28,
                   left: 10,
                   position: "relative",
-                  color: "#ff9829ff",
+                  color: "#ec4b00ff",
+                  
                   fontFamily: "'Montserrat', 'Segoe UI', Arial, sans-serif", // <-- add this line
                   fontWeight: 800,
                   letterSpacing: "0.04em",

@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import * as React from "react"
+import dynamic from 'next/dynamic'
 import {
   ColumnDef,
   ColumnFiltersState, 
@@ -54,7 +55,18 @@ export type ImgInfo = {
     // time: 
 }
 
-export function DataTableDemo() {
+// Disable SSR for DataTableDemo to prevent hydration issues
+const DataTableDemo = dynamic(() => Promise.resolve(DataTableDemoComponent), {
+    ssr: false
+});
+
+function DataTableDemoComponent() {
+    const [isClient, setIsClient] = React.useState(false);
+    
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     const setRegions = useCanvasStore((s) => s.setRegions);
     const setBorders = useCanvasStore((s) => s.setBorders);
     const setImageUrl = useImageStore((s) => s.setImageUrl)
@@ -67,7 +79,7 @@ export function DataTableDemo() {
     const [rowSelection, setRowSelection] = React.useState({})
     const imgs = useDataStore((s) => s.imgs)
 
-    // Memoize data to prevent recreation on every render 
+    // Memoize data to prevent recreation on every render
     const data: ImgInfo[] = React.useMemo(() => 
         imgs.map((img) => ({ 
             name: img, 
@@ -200,6 +212,11 @@ export function DataTableDemo() {
             rowSelection,
         },
     }) 
+
+    // Prevent rendering on server-side to avoid hydration issues
+    if (!isClient) {
+        return <div className="w-full h-64 flex items-center justify-center">Loading...</div>;
+    } 
 
     return (
         <div className="w-full">

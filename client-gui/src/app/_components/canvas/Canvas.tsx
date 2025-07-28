@@ -353,23 +353,24 @@ useEffect(() => {
 
     // Clear old regions
     borderLayer.find(".border").forEach((node) => node.destroy());
-
-    borders.forEach((border) => { 
-      // console.log(border);
-      const rect = new Konva.Rect({
-        // points: region.points.flatMap((p) => [p.x, p.y]),
-        stroke: border.color,
-        strokeWidth: 2,
-        // closed: true,
-        // fill: border.color + "33",
-        x: border.x ,
-        y: border.y , 
-        width: border.width , 
-        height: border.height , 
-        name: "border",
+    if (borders) {
+      borders.forEach((border) => { 
+        // console.log(border);
+        const rect = new Konva.Rect({
+          // points: region.points.flatMap((p) => [p.x, p.y]),
+          stroke: border.color,
+          strokeWidth: 2,
+          // closed: true,
+          // fill: border.color + "33",
+          x: border.x ,
+          y: border.y , 
+          width: border.width , 
+          height: border.height , 
+          name: "border",
+        });
+        borderLayer.add(rect);
       });
-      borderLayer.add(rect);
-    });
+    }
 
     borderLayer.batchDraw();
   }, [borders]);

@@ -66,7 +66,7 @@ const BorderItem: React.FC<BorderItemProps> = ({ border, onRemove }) => {
 };
 
 const BorderList: React.FC = () => {
-  const borders = useCanvasStore((s) => s.borders);
+  const borders = useCanvasStore((s) => s.borders) ?? [];
   const setBorders = useCanvasStore((s) => s.setBorders);
 
   const sensors = useSensors(
@@ -95,7 +95,7 @@ const BorderList: React.FC = () => {
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={borders.map((r) => r.id)}
+        items={(borders ?? []).map((r) => r.id)}
         strategy={verticalListSortingStrategy}
       >
         <div className="regions-list">

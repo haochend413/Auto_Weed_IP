@@ -53,6 +53,7 @@ export default function Home() {
   }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let tmpUrl = ""
     const file = e.target.files?.[0]; 
     if (!file) return; 
     const formData = new FormData();  
@@ -65,8 +66,10 @@ export default function Home() {
         const data = await res.json(); 
         console.log("Upload successful:", data);  
         console.log(data.url)
+        tmpUrl = data.url
         //update url state for constant rendering; 
-        setImageUrl(baseServerURL + `${data.url}`);
+        console.log(baseServerURL + `${data.url}`)
+        // setImageUrl(baseServerURL + `${data.url}`);
         addImg(file.name); //store it for demo;  
     } else {
         console.error("Upload failed:", res.status, await res.text());
@@ -87,11 +90,13 @@ export default function Home() {
         body: JSON.stringify(image)
     });
     if (res2.ok) {
-        const data = await res2.json(); 
-        console.log("Upload successful:", data);  
-        console.log(data.url)
+        // const data = await 
+        // console.log("Upload successful:", data);  
+        console.log(tmpUrl)
         //update url state for constant rendering; 
-        setImageUrl(baseServerURL + `${data.url}`);
+        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        console.log(baseServerURL)
+        setImageUrl(baseServerURL + tmpUrl);
 
     } else {
         console.error("Upload failed:", res2.status, await res2.text());

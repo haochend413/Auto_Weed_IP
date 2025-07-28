@@ -7,6 +7,7 @@ import useServerStore from '../_store/server';
 import useCanvasStore, {Region, Border} from '../_store/canvas';
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import useDataStore from '../_store/data';
 import "./style.css"
 
 //This SCALE is for sizes change between image-canvas, has nothing to do with cv2 ! 
@@ -24,6 +25,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   const setBorders = useCanvasStore((s) => s.setBorders) 
   //scale
   const SCALE = useCanvasStore((s) => s.scale)
+  //imgs
 
   // Local state for checkboxes as a Map
   const [checked, setChecked] = useState<Map<string, boolean>>(

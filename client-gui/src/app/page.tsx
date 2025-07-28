@@ -2,14 +2,18 @@
 // Example: /client-gui/src/app/page.tsx
 import React, { useState, useEffect} from "react";
 import Settings from "./_components/settings";
+import Gallery from "./_components/gallery"; 
+
 import Wrap from "./_components/canvas/wrap";
 import  useImageStore  from "./_store/img";
 import useServerStore from "./_store/server";
+import useDataStore from "./_store/data";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
+
 
 
 export default function Home() {
@@ -19,6 +23,8 @@ export default function Home() {
   const [selectedOps, setSelectedOps] = useState<string[]>([]);
   const baseServerURL = useServerStore((s) => s.baseServerURL)
   const setBaseServerURL = useServerStore((s) => s.setBaseServerURL) 
+  const imgs = useDataStore((s) => s.imgs)
+  const addImg = useDataStore((s) => s.addImg)
 
   // startup setting to get the right url
   useEffect(() => {
@@ -61,6 +67,7 @@ export default function Home() {
         console.log(data.url)
         //update url state for constant rendering; 
         setImageUrl(baseServerURL + `${data.url}`);
+        addImg(file.name); //store it for demo;  
     } else {
         console.error("Upload failed:", res.status, await res.text());
     }
@@ -85,6 +92,7 @@ export default function Home() {
         console.log(data.url)
         //update url state for constant rendering; 
         setImageUrl(baseServerURL + `${data.url}`);
+
     } else {
         console.error("Upload failed:", res2.status, await res2.text());
     }
@@ -144,6 +152,10 @@ export default function Home() {
           <label
             htmlFor="file-upload"
             className="inline-block px-6 py-2 bg-[#1976d2] text-white rounded-lg cursor-pointer mt-2 font-semibold text-base shadow-md border-2 border-[#1976d2]"
+            style={{
+              marginBottom: 15, 
+              // padding: 32,
+            }}
           >
             Upload Image
           </label>
@@ -158,6 +170,7 @@ export default function Home() {
               Image uploaded!
             </div>
           )}
+          <Gallery/> 
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={75} className="h-full min-w-0 bg-[#f0f4ff] flex flex-col">

@@ -25,35 +25,35 @@ const BaseImage = ({ layer }: { layer: Konva.Layer }) => {
     imageObj.src = imageUrl;
 
     imageObj.onload = () => {
-    console.time("Total onload");
-    
-    console.time("Destroy children");
-    layer.destroyChildren();
-    console.timeEnd("Destroy children");
-    
-    console.time("Create Konva.Image");
-    const konvaImage = new Konva.Image({
-      image: imageObj,
-      x: 0,
-      y: 0,
-    });
-    console.timeEnd("Create Konva.Image");
-    
-    console.time("Calculate and set scale");
-    const scale = Math.min(width / imageObj.width, height / imageObj.height);
-    setScale(scale);
-    setOrigScale(scale);
-    setImageSize({ width: imageObj.width, height: imageObj.height });
-    console.timeEnd("Calculate and set scale");
-    
-    console.time("Layer operations");
-    layer.scale({ x: scale, y: scale });
-    layer.add(konvaImage);
-    layer.batchDraw();
-    console.timeEnd("Layer operations");
-    
-    console.timeEnd("Total onload");
-    console.log("Image dimensions:", imageObj.width, imageObj.height);
+      console.time("Total onload");
+      
+      console.time("Destroy children");
+      layer.destroyChildren();
+      console.timeEnd("Destroy children");
+      
+      console.time("Create Konva.Image");
+      const konvaImage = new Konva.Image({
+        image: imageObj,
+        x: 0,
+        y: 0,
+      });
+      console.timeEnd("Create Konva.Image");
+      
+      console.time("Calculate and set scale");
+      const scale = Math.min(width / imageObj.width, height / imageObj.height);
+      setScale(scale);
+      setOrigScale(scale);
+      setImageSize({ width: imageObj.width, height: imageObj.height });
+      console.timeEnd("Calculate and set scale");
+      
+      console.time("Layer operations");
+      layer.scale({ x: scale, y: scale });
+      layer.add(konvaImage);
+      layer.batchDraw();
+      console.timeEnd("Layer operations");
+      
+      console.timeEnd("Total onload");
+      console.log("Image dimensions:", imageObj.width, imageObj.height);
   };
 
     imageObj.onerror = (err) => {

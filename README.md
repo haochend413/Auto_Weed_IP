@@ -21,7 +21,9 @@ python 3.13 (maybe), go 1.24.4
      - `cd frontend`
      - `go build -o awd`
 
-## CLI Use Guide
+## CLI
+
+Built with Golang & Cobra. 
 
 [![Guide](https://img.youtube.com/vi/jOXxdtn0LE8/0.jpg)](https://youtu.be/jOXxdtn0LE8)
 
@@ -62,3 +64,8 @@ Built with TypeScript + Next.js.
 - local upload 
 - manual labeling / fine-tuning results
 - downloadable image / data
+
+
+## Server & Database
+
+Built with Fastapi + SQLModel + PostgreDB. 

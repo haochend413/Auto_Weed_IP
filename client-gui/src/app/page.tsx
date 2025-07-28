@@ -64,7 +64,31 @@ export default function Home() {
     } else {
         console.error("Upload failed:", res.status, await res.text());
     }
-    // handle response (e.g., show filename or success message)
+
+    
+
+    const img_path = baseServerURL + "/raw_upload/" + file.name; 
+    const image = {
+      img_path: img_path,
+      regions: [],
+      borders: [],
+      classification: "none", 
+    }
+    const res2 = await fetch(baseServerURL + "/db/putImage", {
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(image)
+    });
+    if (res2.ok) {
+        const data = await res2.json(); 
+        console.log("Upload successful:", data);  
+        console.log(data.url)
+        //update url state for constant rendering; 
+        setImageUrl(baseServerURL + `${data.url}`);
+    } else {
+        console.error("Upload failed:", res2.status, await res2.text());
+    }
+  
   };
  
 

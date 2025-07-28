@@ -35,14 +35,14 @@ export function Download() {
             [border.x / origScale, border.y / origScale],
             [border.x / origScale + border.width / origScale, border.y / origScale + border.height / origScale]
         ]);
-        console.log(regionsPayload)
-        console.log(bordersPayload)
+        // console.log(regionsPayload)
+        // console.log(bordersPayload)
 
         const payload = {
             regions: regionsPayload,
             boxes: bordersPayload
         };
-        console.log(JSON.stringify(payload, null, 2)); 
+        // console.log(JSON.stringify(payload, null, 2)); 
 
         const response = await fetch(baseServerURL + "/gui/download_p", {
             method: "POST", 

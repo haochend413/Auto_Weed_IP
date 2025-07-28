@@ -3,13 +3,18 @@ from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from API.autorun import model_router
-from ultralytics import YOLO
 from API.upload import gui_router
+from db.crud import db_router
+from ultralytics import YOLO
+
 import os
 import shutil
+from db.db import engine
+from sqlmodel import SQLModel
 
 # from model import models, load_models
 from pathlib import Path
+from db.db import init_db
 
 
 @asynccontextmanager
@@ -24,6 +29,8 @@ async def lifespan(app: FastAPI):
     processed_dir = base_dir / "processed"
     # print(model.models)
     # Server Running
+    # load database
+    await init_db()
     yield
     model.models.clear()
     # clear up local storage
@@ -48,6 +55,7 @@ app = FastAPI(lifespan=lifespan)
 app.mount("/raw_upload", StaticFiles(directory="raw_upload"), name="raw_upload")
 app.include_router(model_router, prefix="/model")
 app.include_router(gui_router, prefix="/gui")
+app.include_router(db_router, prefix="/db")
 
 # define app states;
 app.state.curr_img = None

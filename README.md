@@ -68,4 +68,5 @@ Built with TypeScript + Next.js.
 
 ## Server & Database
 
-Built with Fastapi + SQLModel + PostgreDB. 
+Built with Fastapi + SQLModel + PostgreDB.
+Powerful Component functionalities provided by shadcn-ui 

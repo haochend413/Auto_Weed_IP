@@ -3,12 +3,13 @@ import { create } from "zustand";
 
 
 
-// We do not need this; this is for local storage; 
-interface ImageData {
-    regions: number[][][];        
-    boxes: number[][][];          
-    classification: string;
-}
+// // We do not need this; this is for local storage; 
+// interface ImageData {
+//     regions: number[][][];        
+//     boxes: number[][][];          
+//     classification: string;
+// }
+
 
 interface DataStore {
     // imgMap: Map<string, ImageData>; //path to data; 

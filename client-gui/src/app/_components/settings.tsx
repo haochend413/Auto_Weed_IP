@@ -35,7 +35,7 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
       ["classify", false],
       ])
     ); 
-
+  //need change! 
   const HandleRun = async () => { 
     //detect, segment, classify
     const signal = [

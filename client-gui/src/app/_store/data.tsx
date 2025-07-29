@@ -15,6 +15,7 @@ interface DataStore {
     imgs: string[], 
     addImg: (name: string) => void,
     deleteImg : (name: string) => void, 
+    setImg: (names: string[]) => void, 
 }
 
 const useDataStore = create<DataStore>((set) => ({
@@ -27,7 +28,8 @@ const useDataStore = create<DataStore>((set) => ({
     deleteImg: (name) =>
         set((state) => ({
             imgs: state.imgs.filter(img => img !== name)
-        })),
+        })), 
+    setImg: (names) => set(() => ({ imgs: names }))
 }));
 
 

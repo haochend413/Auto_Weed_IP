@@ -79,6 +79,18 @@ function DataTableDemoComponent() {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
     const imgs = useDataStore((s) => s.imgs)
+    const setImg = useDataStore((s) => s.setImg)
+
+
+    //we need server, db and this front end to work correspondingly. Now the things on the server might not be what's in the db. 
+    //Maybe erase db when server start; Always keep db and server in sync. 
+    const HandleStartUp = async() => {
+        //load img data into img
+    }
+
+
+
+
 
     // Memoize data to prevent recreation on every render
     const data: ImgInfo[] = React.useMemo(() => 
@@ -86,12 +98,7 @@ function DataTableDemoComponent() {
             name: img, 
             status: false, 
         })), [imgs]
-    )
-    // const data: ImgInfo[] = 
-    //     imgs.map((img) => ({ 
-    //         name: img, 
-    //         status: false, 
-    //     }))
+    ) 
 
     // Memoize the HandleEdit function
     const HandleEdit = React.useCallback(async (filename: string) => {

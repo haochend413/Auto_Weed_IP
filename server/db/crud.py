@@ -15,6 +15,16 @@ from pydantic import BaseModel
 db_router = APIRouter()
 
 
+# fetch all the imgs as their paths;
+@db_router.get("/getAllNames")
+async def get_images(session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Image.img_path))
+    namelist = [
+        img_path[0] for img_path in result.fetchall()
+    ]  # turn tuples into clean list;
+    return namelist
+
+
 # fetch the data
 @db_router.get("/getImage/")
 async def get_images(img_path: str, session: AsyncSession = Depends(get_session)):

@@ -32,7 +32,7 @@ export default function Home() {
     const urls = [
 
       //after construction, need to register this to a stable deployer;  
-      // "http://10.192.227.142", // for illinoisNet
+      // "http://10.192.227.142", // for illinoisNet, also wont work
       // "http://192.168.10.252:8000", // for VUE // this will not work due to mixed https / http
       "http://localhost:8000", //local 
     ];
@@ -54,60 +54,68 @@ export default function Home() {
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let tmpUrl = ""
-    const file = e.target.files?.[0]; 
-    if (!file) return; 
-    const formData = new FormData();  
-    formData.append("img", file); 
-    const res = await fetch(baseServerURL + "/gui/upload", {
-      method: "POST", 
-      body: formData,
-    }); 
-    if (res.ok) {
-        const data = await res.json(); 
-        console.log("Upload successful:", data);  
-        console.log(data.url)
-        tmpUrl = data.url
-        //update url state for constant rendering; 
-        console.log(baseServerURL + `${data.url}`)
-        // setImageUrl(baseServerURL + `${data.url}`);
-        addImg(file.name); //store it for demo;  
-    } else {
-        console.error("Upload failed:", res.status, await res.text());
-    }
-
-    
-
-    const img_path = baseServerURL + "/raw_upload/" + file.name; 
-    const image = {
-      img_path: img_path,
-      regions: [],
-      borders: [],
-      classification: "none", 
-    }
-    const res2 = await fetch(baseServerURL + "/db/putImage", {
+    // const file = e.target.files?.[0]; 
+    const files = e.target.files
+    if (!files) return; 
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file) return; 
+      const formData = new FormData();  
+      formData.append("img", file); 
+      const res = await fetch(baseServerURL + "/gui/upload", {
         method: "POST", 
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(image)
-    });
-    if (res2.ok) {
-        // const data = await 
-        // console.log("Upload successful:", data);  
-        console.log(tmpUrl)
-        //update url state for constant rendering; 
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-        console.log(baseServerURL)
-        setImageUrl(baseServerURL + tmpUrl);
+        body: formData,
+      }); 
+      if (res.ok) {
+          const data = await res.json(); 
+          console.log("Upload successful:", data);  
+          console.log(data.url)
+          tmpUrl = data.url
+          //update url state for constant rendering; 
+          console.log(baseServerURL + `${data.url}`)
+          // setImageUrl(baseServerURL + `${data.url}`);
+          addImg(file.name); //store it for demo;  
+      } else {
+          console.error("Upload failed:", res.status, await res.text());
+      }
 
-    } else {
-        console.error("Upload failed:", res2.status, await res2.text());
+      
+
+      const img_path = baseServerURL + "/raw_upload/" + file.name; 
+      const image = {
+        img_path: img_path,
+        regions: [],
+        borders: [],
+        classification: "none", 
+      }
+      const res2 = await fetch(baseServerURL + "/db/putImage", {
+          method: "POST", 
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(image)
+      });
+      if (res2.ok) {
+          // const data = await 
+          // console.log("Upload successful:", data);  
+          console.log(tmpUrl)
+          //update url state for constant rendering; 
+          console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+          console.log(baseServerURL)
+          setImageUrl(baseServerURL + tmpUrl);
+
+      } else {
+          console.error("Upload failed:", res2.status, await res2.text());
+      }
     }
+    
   
   };
  
 
 
   return (
-    <div className="fixed inset-0 w-screen h-screen min-w-0 min-h-0 bg-[#FFFFFF] font-sans">
+    <div className="fixed inset-0 w-screen h-screen min-w-0 min-h-0 bg-[#FFFFFF] font-sans" style={{
+      overflow: "auto", 
+    }}>
       <ResizablePanelGroup
         direction="horizontal"
         className="w-full h-full max-w-full max-h-full rounded-none border-none"
@@ -168,6 +176,7 @@ export default function Home() {
             id="file-upload"
             type="file"
             className="hidden"
+            multiple
             onChange={handleUpload}
           />
           {imageUrl && (

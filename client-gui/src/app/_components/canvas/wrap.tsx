@@ -3,7 +3,10 @@ import React, {useRef, useState} from "react";
 import dynamic from 'next/dynamic';
 import Konva from "konva";
 import "./style.css";
-import useCanvasStore from "../../_store/canvas";
+import useDataStore from "@/app/_store/data";
+import useServerStore from "@/app/_store/server"
+import useImageStore from "@/app/_store/img"
+import useCanvasStore from "@/app/_store/canvas"
 const Canvas = dynamic(() => import('./Canvas'), { ssr: false });
 import RegionsList from "./RegionsList";
 import BorderList from "./BordersList";
@@ -33,8 +36,12 @@ const handleDownload = (stage: Konva.Stage | null) => {
 
  
 const Wrap =  () => {
+  const imageUrl = useImageStore((s) => s.imageUrl)
+  const baseServerURL = useServerStore((s) => s.baseServerURL)
   const width = useCanvasStore((s) => s.width);
   const height = useCanvasStore((s) => s.height);
+  const regions = useCanvasStore((s) => s.regions);
+  const borders = useCanvasStore((s) => s.borders);
   const stageRef = useRef<Konva.Stage | null>(null); 
   const[focusName, setFocusName] = useState<string>('region')
   const imageLayerRef = useRef<Konva.Layer | null>(null);
@@ -47,6 +54,8 @@ const Wrap =  () => {
     "base image": imageLayerRef,
     "border": borderLayerRef,
   };
+
+
   
   const switchFocus = (name: string) => {
     setFocusName(name);
@@ -55,6 +64,25 @@ const Wrap =  () => {
     });
     setFocusLayer(layerRefs[name]?.current ?? null);
   };
+
+  const saveAnnotations = async () => {
+    // get current img; 
+    const updateInfo = {
+      img_path: imageUrl,
+      regions: regions, 
+      boxes: borders, 
+      //no classification yet
+    }
+
+    const response = await fetch(baseServerURL + "/db/editImage", {
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updateInfo), 
+    });
+    if (!response.ok) {
+      return "error edit image"
+    }
+  }
 
 
 
@@ -140,6 +168,24 @@ const Wrap =  () => {
           </Button>
 
           <Download/>
+
+                    <Button
+            style={{
+              background: "#1976d2",
+              color: "white",
+              border: "none",
+              padding: "12px 32px",
+              fontWeight: 600,
+              fontSize: 18,
+              boxShadow: "0 2px 8px rgba(25,118,210,0.12)",
+              cursor: "pointer",
+              transition: "background 0.2s",
+              marginBottom: 10, 
+            }}
+            onClick={() => saveAnnotations()}
+          >
+            Save Annotation
+          </Button>
 
         </div>
   

@@ -5,11 +5,12 @@ from sqlalchemy import select
 import os
 from dotenv import load_dotenv
 from sqlalchemy.orm import sessionmaker
-from typing import AsyncGenerator, List
+from typing import List, Optional, Any
 import asyncio
 from db.db import get_session
 from db.models import Image
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 db_router = APIRouter()
 
@@ -39,3 +40,41 @@ async def delete_image(img_path: str, session: AsyncSession = Depends(get_sessio
         await session.delete(img)
     await session.commit()
     return {"deleted": len(imgs)}
+
+
+# Define model for the update request
+class ImageUpdate(BaseModel):
+    img_path: str
+    regions: Optional[List[Any]] = None
+    boxes: Optional[List[Any]] = None
+    classification: Optional[str] = None
+
+
+# edit a image;
+@db_router.post("/editImage")
+async def edit_image(
+    imgUpdate: ImageUpdate, session: AsyncSession = Depends(get_session)
+):
+    # fetch
+    result = await session.execute(
+        select(Image).where(Image.img_path == imgUpdate.img_path)
+    )
+    image = result.scalars().first()
+
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    # update
+    if imgUpdate.regions is not None:
+        image.regions = imgUpdate.regions
+
+    if imgUpdate.boxes is not None:
+        image.boxes = imgUpdate.boxes
+
+    if imgUpdate.classification is not None:
+        image.classification = imgUpdate.classification
+
+    # commit
+    await session.commit()
+    await session.refresh(image)
+
+    return image

@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -86,6 +87,11 @@ function DataTableDemoComponent() {
             status: false, 
         })), [imgs]
     )
+    // const data: ImgInfo[] = 
+    //     imgs.map((img) => ({ 
+    //         name: img, 
+    //         status: false, 
+    //     }))
 
     // Memoize the HandleEdit function
     const HandleEdit = React.useCallback(async (filename: string) => {
@@ -109,8 +115,8 @@ function DataTableDemoComponent() {
                 console.log("Image data:", image.img_path);
                 setImageUrl(image.img_path);
                 
-                // setRegions(image.regions ?? []);
-                // setBorders(image.boxes ?? []);
+                setRegions(image.regions ?? []);
+                setBorders(image.boxes ?? []); 
                 console.log("State updated");
             }
         } catch (error) {

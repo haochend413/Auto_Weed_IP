@@ -79,6 +79,7 @@ export function Download() {
               boxShadow: "0 2px 8px rgba(25,118,210,0.12)",
               cursor: "pointer",
               transition: "background 0.2s",
+              marginBottom: 10, 
             }}
             onClick={()=>handleDownload()}> Download CV2 Rendered; </Button>
 }

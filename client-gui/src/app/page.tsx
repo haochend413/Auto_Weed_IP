@@ -8,6 +8,7 @@ import Wrap from "./_components/canvas/wrap";
 import  useImageStore  from "./_store/img";
 import useServerStore from "./_store/server";
 import useDataStore from "./_store/data";
+import useCanvasStore from "./_store/canvas";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -21,6 +22,8 @@ export default function Home() {
   const setImageUrl = useImageStore((s) => s.setImageUrl)
   const [folded, setFolded] = useState(false);
   const [selectedOps, setSelectedOps] = useState<string[]>([]);
+  const setRegions = useCanvasStore((s) => s.setRegions)
+  const setBorders = useCanvasStore((s) => s.setBorders)
   const baseServerURL = useServerStore((s) => s.baseServerURL)
   const setBaseServerURL = useServerStore((s) => s.setBaseServerURL) 
   const imgs = useDataStore((s) => s.imgs)
@@ -53,6 +56,8 @@ export default function Home() {
   }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBorders([])
+    setRegions([])
     let tmpUrl = ""
     // const file = e.target.files?.[0]; 
     const files = e.target.files

@@ -111,6 +111,7 @@ def run(
 
 
 class CombinedRequest(BaseModel):
+    img_path: str
     ops: list[bool]
     TopOnly: bool
 
@@ -123,6 +124,7 @@ def runCombined(request: CombinedRequest = Body(...)):
     Run all the models and manually draw the results.
     """
 
+    img_path = request.img_path
     ops = request.ops
     TopOnly = request.TopOnly
 
@@ -148,7 +150,7 @@ def runCombined(request: CombinedRequest = Body(...)):
     res_dec = res_seg = res_cls = None
     res_dec_map = res_seg_map = res_cls_map = {}
 
-    image_paths = glob.glob(str(i_src) + "/*.jpg")
+    image_paths = [img_path]
     # Sort by time;
     image_paths = sorted(image_paths, key=lambda x: os.path.getmtime(x), reverse=True)
     if TopOnly:
@@ -273,4 +275,4 @@ def runCombined(request: CombinedRequest = Body(...)):
         cv2.imwrite(str(Path(processed_dir) / f"{img_name}.jpg"), img)
         # use stored data to produce json contour
 
-        return result
+    return result

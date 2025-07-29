@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import useModelStore from '../_store/model';
 import useServerStore from '../_store/server';
 import useCanvasStore, {Region, Border} from '../_store/canvas';
+import useImageStore from '../_store/img';
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
@@ -26,6 +27,8 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
   //scale
   const SCALE = useCanvasStore((s) => s.scale)
   //imgs
+  const imageUrl = useImageStore((s) => s.imageUrl)
+
 
   // Local state for checkboxes as a Map
   const [checked, setChecked] = useState<Map<string, boolean>>(
@@ -35,7 +38,13 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
       ["classify", false],
       ])
     ); 
+  
+  //This should match
   //need change! 
+
+
+
+  
   const HandleRun = async () => { 
     //detect, segment, classify
     const signal = [
@@ -44,11 +53,20 @@ const Settings = ({ onChange }: { onChange: (ops: string[]) => void }) => {
         runOps.get("classify") || false
     ];
 
+    if (!imageUrl) {
+      console.error("No imageUrl provided");
+      return;
+    }
+    const filename = imageUrl.split('/').pop();
+    const serverFilePath = `raw_upload/${filename}`;
+    
+    console.log("Sending path to server:", serverFilePath);
+    
     const response = await fetch(baseServerURL + "/model/combined", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       //APIs 
-      body: JSON.stringify({ ops: signal , TopOnly: true})
+      body: JSON.stringify({ ops: signal , TopOnly: true, img_path: serverFilePath})
     });
     
     const result = await response.json();  

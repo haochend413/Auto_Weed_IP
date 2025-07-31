@@ -79,14 +79,7 @@ function DataTableDemoComponent() {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
     const imgs = useDataStore((s) => s.imgs)
-    const setImg = useDataStore((s) => s.setImg)
-
-
-    //we need server, db and this front end to work correspondingly. Now the things on the server might not be what's in the db. 
-    //Maybe erase db when server start; Always keep db and server in sync. 
-    const HandleStartUp = async() => {
-        //load img data into img
-    }
+    
 
 
 
@@ -348,10 +341,27 @@ function DataTableDemoComponent() {
 }
 
 export default function Gallery() {
+
+    const setImg = useDataStore((s) => s.setImg)
+    const baseServerURL = useServerStore((s) => s.baseServerURL)
+
+
+    //sidebar data load when open
+    const HandleLoadSideBar = async() => {
+        //load img data into img
+        const res = await fetch(baseServerURL + "/file/getAllImageNames", {
+            method : "GET", 
+            headers: { "Content-Type": "application/json" }, 
+        })
+        const names = await res.json(); 
+        console.log(names)
+        setImg(names); 
+    }
+
     return (
         <Sheet>
             <SheetTrigger asChild> 
-                <Button variant="outline">Open</Button>
+                <Button variant="outline" onClick={()=> HandleLoadSideBar()}>Open</Button>
             </SheetTrigger>
             <SheetContent style={{maxWidth: 1000, width: 900}}>
                 <SheetHeader>

@@ -16,7 +16,7 @@ db_router = APIRouter()
 
 
 # fetch all the imgs as their paths;
-@db_router.get("/getAllNames")
+@db_router.get("/getAllPhotosDB")
 async def get_images(session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(Image.img_path))
     namelist = [

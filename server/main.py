@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from API.autorun import model_router
 from API.upload import gui_router
+from API.file import file_router
 from db.crud import db_router
 from ultralytics import YOLO
 
@@ -56,6 +57,7 @@ app.mount("/raw_upload", StaticFiles(directory="raw_upload"), name="raw_upload")
 app.include_router(model_router, prefix="/model")
 app.include_router(gui_router, prefix="/gui")
 app.include_router(db_router, prefix="/db")
+app.include_router(file_router, prefix="/file")
 
 # define app states;
 app.state.curr_img = None

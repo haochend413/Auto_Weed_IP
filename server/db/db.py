@@ -25,6 +25,12 @@ async def init_db():
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
+# end coonection function;
+async def on_shutdown():
+    await engine.dispose()
+    print("🔌 DB engine disposed")
+
+
 # if __name__ == "__main__":
 
 #     async def main():

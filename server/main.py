@@ -15,7 +15,7 @@ from sqlmodel import SQLModel
 
 # from model import models, load_models
 from pathlib import Path
-from db.db import init_db
+from db.db import init_db, on_shutdown
 
 
 @asynccontextmanager
@@ -49,6 +49,9 @@ async def lifespan(app: FastAPI):
             shutil.rmtree(item, ignore_errors=True)
         else:
             item.unlink(missing_ok=True)
+    print(f"Removing database connection ...")
+    await on_shutdown()
+    print(f"Database connection removed.")
 
 
 # mount for common access
